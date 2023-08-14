@@ -3,7 +3,7 @@
 #include "./creature.hpp"
 #include "./configuration.hpp"
 
-#include "common/neat/genome.hpp"
+#include "common/neat_old/genome.hpp"
 
 
 struct Task

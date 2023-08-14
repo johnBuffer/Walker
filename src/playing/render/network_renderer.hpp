@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "engine/common/utils.hpp"
-#include "common/neat/network.hpp"
+#include "common/neat_old/network.hpp"
 
 
 struct NetworkRenderer
