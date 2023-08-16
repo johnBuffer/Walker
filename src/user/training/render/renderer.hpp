@@ -1,12 +1,12 @@
 #pragma once
 #include "engine/window_context_handler.hpp"
-#include "playing/simulation/simulation.hpp"
+#include "user/playing/simulation/simulation.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "utils.hpp"
-#include "./creature_drawable.hpp"
+#include "user/common/creature_drawable.hpp"
 #include "./target.hpp"
-#include "./network_renderer.hpp"
+#include "user/common/network_renderer.hpp"
 #include "./creature_card.hpp"
 
 
@@ -14,7 +14,7 @@ struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    Simulation& simulation;
+    SimulationPlaying& simulation;
 
     std::vector<CreatureDrawable> creature_drawables;
 
@@ -38,14 +38,14 @@ struct Renderer
     float const network_outline = 10.0f;
 
     explicit
-    Renderer(Simulation& simulation_)
-            : simulation{simulation_}
-            , objects_va{sf::PrimitiveType::Quads}
-            , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
-            , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
-            , hud_va{sf::PrimitiveType::Quads, 4}
-            , network_back({}, 0.0f, sf::Color{50, 50, 50})
-            , network_out({}, 0.0f, sf::Color{50, 50, 50})
+    Renderer(SimulationPlaying& simulation_)
+        : simulation{simulation_}
+        , objects_va{sf::PrimitiveType::Quads}
+        , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
+        , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
+        , hud_va{sf::PrimitiveType::Quads, 4}
+        , network_back({}, 0.0f, sf::Color{50, 50, 50})
+        , network_out({}, 0.0f, sf::Color{50, 50, 50})
     {
         object_texture.loadFromFile("res/circle.png");
 

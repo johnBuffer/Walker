@@ -1,9 +1,10 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "./creature.hpp"
-#include "./configuration.hpp"
+#include "engine/common/math.hpp"
 
-#include "common/neat_old/genome.hpp"
+#include "user/common/creature.hpp"
+#include "user/common/configuration.hpp"
+#include "user/common/neat_old/genome.hpp"
 
 
 struct Task
@@ -48,23 +49,23 @@ struct Task
         const float to_target_dot   = MathVec2::dot(to_target / dist_to_target, creature.getHeadDirection());
         const float to_target_dot_n = MathVec2::dot(to_target / dist_to_target, MathVec2::normal(creature.getHeadDirection()));
         const auto& output = network.execute({
-                                                     dist_to_target / conf::max_distance, // Distance to target
-                                                     to_target_dot,                       // Direction evaluation
-                                                     to_target_dot_n,                     // Direction normal evaluation
-                                                     creature.getPodFriction(0),          // Pods state
-                                                     creature.getPodFriction(1),
-                                                     creature.getPodFriction(2),
-                                                     creature.getPodFriction(3),
-                                                     creature.getMuscleSize(0),           // Muscles state
-                                                     creature.getMuscleSize(1),
-                                             });
+            dist_to_target / conf::maximum_distance, // Distance to target
+            to_target_dot,                       // Direction evaluation
+            to_target_dot_n,                     // Direction normal evaluation
+            creature.getPodFriction(0),          // Pods state
+            creature.getPodFriction(1),
+            creature.getPodFriction(2),
+            creature.getPodFriction(3),
+            creature.getMuscleRatio(0),           // Muscles state
+            creature.getMuscleRatio(1),
+        });
 
         for (uint32_t i{0}; i<4; ++i) {
             creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
         }
 
         for (uint32_t i{0}; i<2; ++i) {
-            creature.setMuscleSize(i, output[4 + i]);
+            creature.setMuscleRatio(i, output[4 + i]);
         }
     }
 

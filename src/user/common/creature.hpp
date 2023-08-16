@@ -1,5 +1,5 @@
 #pragma once
-#include "game/physic/verlet_system.hpp"
+#include "user/common/physic/verlet_system.hpp"
 
 struct Muscle
 {
@@ -94,50 +94,22 @@ struct Creature
     Creature(Vec2 position)
     {
         float const base = 50.0f;
-        addJoint({position.x - 0.75f * base, position.y - 0.75f * base}); // 0
-        addJoint({position.x + 0.75f * base, position.y - 0.75f * base}); // 1
-        addJoint({position.x + 0.75f * base, position.y + 0.75f * base}); // 2
-        addJoint({position.x - 0.75f * base, position.y + 0.75f * base}); // 3
-
-        addPod({position.x - base - base, position.y - base}); // 4
-        addPod({position.x + base + base, position.y - base}); // 5
-        addPod({position.x + base + base, position.y + base}); // 6
-        addPod({position.x - base - base, position.y + base}); // 7
-
-        float const top_contraction = 0.5f;
+        addPod({position.x - base, position.y - base}); // 0
+        addPod({position.x + base, position.y - base}); // 1
+        addPod({position.x + base, position.y + base}); // 2
+        addPod({position.x - base, position.y + base}); // 3
+        addJoint(position);
 
         // Muscles
-        addMuscle(3, 4, 80.0f, 0.25f, 0.25f);
-        //addMuscle(0, 8, 50.0f, top_contraction, 0.9f);
-
-        addMuscle(2, 5, 80.0f, 0.25f, 0.25f);
-        //addMuscle(1, 9, 50.0f, top_contraction, 0.9f);
-
-        addMuscle(1, 6 , 80.0f, 0.25f, 0.25f);
-        //addMuscle(2, 10, 50.0f, top_contraction, 0.9f);
-
-        addMuscle(0, 7 , 80.0f, 0.25f, 0.25f);
-        //addMuscle(3, 11, 50.0f, top_contraction, 0.9f);
-
+        addMuscle(0, 3, base, 0.5f, 0.5f);
+        addMuscle(1, 2, base, 0.5f, 0.5f);
         // Stabilizers
         addBone(0, 1);
-        addBone(1, 2);
-        addBone(2, 3);
-        addBone(3, 0);
-        addBone(0, 2);
-        addBone(3, 1);
-
+        addBone(3, 2);
         addBone(0, 4);
-        //addBone(4, 8);
-
-        addBone(1, 5);
-        //addBone(5, 9);
-
-        addBone(2, 6);
-        //addBone(6, 10);
-
-        addBone(3, 7);
-        //addBone(7, 11);
+        addBone(1, 4);
+        addBone(2, 4);
+        addBone(3, 4);
     }
 
     void update(float dt)
@@ -247,6 +219,24 @@ struct Creature
             o.position      += to_pos;
             o.position_last += to_pos;
         }
+    }
+
+    [[nodiscard]]
+    uint64_t getLinkCount() const
+    {
+        return system.links.size();
+    }
+
+    [[nodiscard]]
+    uint64_t getPodCount() const
+    {
+        return pods.size();
+    }
+
+    [[nodiscard]]
+    VerletObject const& getJoint(uint32_t idx) const
+    {
+        return system.objects[idx];
     }
 };
 

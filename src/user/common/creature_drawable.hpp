@@ -2,7 +2,7 @@
 #include "engine/window_context_handler.hpp"
 #include "engine/common/color_utils.hpp"
 
-#include "./target.hpp"
+#include "user/playing/render/target.hpp"
 
 
 struct CreatureDrawable
@@ -63,8 +63,8 @@ struct CreatureDrawable
     void initialize(Creature const& creature)
     {
         link_va.resize(creature.getLinkCount() * 4);
-        pods_cooldown.resize(creature.getPodsCount());
-        pods_radius.resize(creature.getPodsCount());
+        pods_cooldown.resize(creature.getPodCount());
+        pods_radius.resize(creature.getPodCount());
         for (auto& c : pods_cooldown) {
             c = 0.0f;
         }
@@ -102,13 +102,13 @@ struct CreatureDrawable
         float const muscle_contraction_size = 30.0f;
 
         {
-            float const contraction = 1.0f + creature.getLinkSize(0) * 0.5f;
+            float const contraction = creature.getMuscleRatio(0);
             auto const color = getMuscleColor(contraction);
             Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -20.0f + (1.0f - (contraction - 0.5f)) * muscle_contraction_size);
         }
 
         {
-            float const contraction = 1.0f + creature.getLinkSize(1) * 0.5f;
+            float const contraction = creature.getMuscleRatio(1);
             auto const color = getMuscleColor(contraction);
             Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -20.0f + (1.0f - (contraction - 0.5f)) * muscle_contraction_size);
         }

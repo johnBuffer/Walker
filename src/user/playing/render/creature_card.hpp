@@ -1,7 +1,7 @@
 #pragma once
 #include "./card.hpp"
 
-#include "playing/simulation/simulation.hpp"
+#include "user/playing/simulation/simulation.hpp"
 
 #include "engine/common/racc.hpp"
 
@@ -74,7 +74,7 @@ struct CreatureCard
         position.setSpeed(2.0f);
     }
 
-    void update(Simulation const& simulation, uint32_t target_id, Creature const& creature)
+    void update(SimulationPlaying const& simulation, uint32_t target_id, Creature const& creature)
     {
         Vec2 const  last_target    = (target_id > 0) ? simulation.targets[target_id - 1] : conf::world_size * 0.5f;
         float const distance       = MathVec2::length(simulation.targets[target_id] - last_target);

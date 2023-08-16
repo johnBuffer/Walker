@@ -1,5 +1,6 @@
 #pragma once
 #include "verlet_object.hpp"
+#include "engine/common/math.hpp"
 
 
 struct VerletLink

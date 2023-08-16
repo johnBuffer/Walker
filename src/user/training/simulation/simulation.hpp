@@ -4,11 +4,11 @@
 
 #include "./task.hpp"
 #include "./configuration.hpp"
-#include "common/physic/background/physics.hpp"
+#include "user/playing/sand/physics.hpp"
 #include "engine/common/color_utils.hpp"
 
 
-struct Simulation
+struct SimulationPlaying
 {
     std::vector<Creature> creatures;
     std::vector<Task>     tasks;
@@ -21,32 +21,15 @@ struct Simulation
     float time = 0.0f;
     float const freeze_time = 0.0f;
 
-    Simulation()
-            : thread_pool{16}
-            , solver(IVec2(480, 480), thread_pool)
+    SimulationPlaying()
+        : thread_pool{16}
+        , solver(IVec2(480, 480), thread_pool)
     {
         createTargets();
         createBackground();
 
-        //createCreature("res/progress/best_10.bin"  , sf::Color{200, 200, 200}, 10);
-        //createCreature("res/progress/best_20.bin"  , sf::Color{200, 200, 200}, 20);
-        //createCreature("res/progress/best_50.bin"  , sf::Color{200, 200, 200}, 50);
-        //createCreature("res/progress/best_100.bin" , sf::Color{200, 200, 200}, 70); // 70
-        //createCreature("res/progress/best_200.bin" , sf::Color{200, 200, 200}, 100); // 100
-        //createCreature("res/progress/best_500.bin" , sf::Color{200, 200, 200}, 200); // 200
-        //createCreature("res/progress/best_1000.bin", sf::Color{200, 200, 200}, 500); // 500
-        //createCreature("res/progress/fine_tune/ft_750.bin", {200, 200, 200}, 750);
         createCreature("res/04.bin", {121, 123, 255}, "Solution 1");
-
         createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 4");
-        //createCreature("res/Video/4_pods_12.bin", {255, 133, 81}, "Solution 2");
-        //createCreature("res/Video/dna.bin", {128, 85, 140}, "Solution 3");
-
-
-        //createCreature("res/best_2000.bin", sf::Color{100, 250, 100});
-        //createCreature("res/best_1050.bin", sf::Color{250, 150, 100});
-        //createCreature("res/best_440.bin", sf::Color{250, 250, 100});
-        //createCreature("res/best_220.bin", sf::Color{100, 100, 250});
 
         target_remaining.resize(targets.size());
         for (auto& t : target_remaining) {
@@ -98,7 +81,7 @@ struct Simulation
         for (auto& creature : creatures) {
             for (auto& obj: solver.objects) {
                 for (uint32_t i{0}; i < 4; ++i) {
-                    auto const& pod     = creature.getJoint(i);
+                    auto const& pod     = creature.getPod(i);
                     Vec2 const  pod_pos = pod.position / physic_scale;
                     Vec2 v = obj.position - pod_pos;
                     float const dist = MathVec2::length(v);

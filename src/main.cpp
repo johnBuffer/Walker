@@ -1,12 +1,12 @@
 #include <iostream>
 
 #include "engine/window_context_handler.hpp"
-#include "playing/simulation/simulation.hpp"
+#include "user/playing/simulation/simulation.hpp"
 
-#include "playing/render/renderer.hpp"
+#include "user/playing/render/renderer.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
-#include "common/physic/background/physics.hpp"
+#include "user/playing/sand/physics.hpp"
 
 
 int main()
@@ -22,7 +22,7 @@ int main()
         emit = !emit;
     });
 
-    Simulation simulation;
+    SimulationPlaying simulation;
     Renderer   renderer{simulation};
     SmoothVec2  focus;
     SmoothFloat zoom;
@@ -30,7 +30,7 @@ int main()
     focus.setSpeed(1.5f);
     focus.setValueInstant(conf::world_size * 0.5f);
 
-    zoom.setValueInstant(window_height / conf::max_distance * 0.95f);
+    zoom.setValueInstant(window_height / conf::maximum_distance * 0.95f);
 
     float const creature_zoom = 2.5f;
     int32_t focus_creature = -1;
@@ -42,9 +42,9 @@ int main()
     app.getEventManager().addKeyPressedCallback(sf::Keyboard::C, [&](sfev::CstEv){
         focus_creature = -1;
         focus = conf::world_size * 0.5f;
-        zoom = window_height / conf::max_distance * 0.95f;
+        zoom = window_height / conf::maximum_distance * 0.95f;
         app.getRenderContext().setFocus(conf::world_size * 0.5f);
-        app.getRenderContext().setZoom(window_height / conf::max_distance * 0.95f);
+        app.getRenderContext().setZoom(window_height / conf::maximum_distance * 0.95f);
     });
 
     //app.getRenderContext().setZoom(3.0f);
