@@ -1,145 +1,175 @@
 #pragma once
+#include <filesystem>
 
-#include "engine/common/number_generator.hpp"
+#include "engine/common/index_vector.hpp"
 
-#include "./task.hpp"
-#include "./configuration.hpp"
-#include "user/playing/sand/physics.hpp"
-#include "engine/common/color_utils.hpp"
+#include "user/training/stadium/selector.hpp"
+#include "user/common/neat_old/nn_utils.hpp"
+#include "user/common/neat_old/mutator.hpp"
+#include "user/training/stadium/genetic_info.hpp"
+#include "user/common/thread_pool/thread_pool.hpp"
 
+#include "user/training/stadium/stadium.hpp"
+#include "user/training/stadium/evolver.hpp"
 
-struct SimulationPlaying
+#include "user/training/simulation/walk.hpp"
+
+struct SimulationTraining
 {
-    std::vector<Creature> creatures;
-    std::vector<Task>     tasks;
-    std::vector<Vec2>     targets;
-    std::vector<uint32_t> target_remaining;
-
-    tp::ThreadPool thread_pool;
-    PhysicSolver   solver;
-
-    float time = 0.0f;
-    float const freeze_time = 0.0f;
-
-    SimulationPlaying()
-        : thread_pool{16}
-        , solver(IVec2(480, 480), thread_pool)
+    enum class State : uint8_t
     {
-        createTargets();
-        createBackground();
+        Evaluating     = 0,
+        Demo           = 1,
+        NextGeneration = 2,
+    };
 
-        createCreature("res/04.bin", {121, 123, 255}, "Solution 1");
-        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 4");
+    State state = State::Demo;
 
-        target_remaining.resize(targets.size());
-        for (auto& t : target_remaining) {
-            t = tasks.size();
+    Vec2 world_size;
+
+    static constexpr uint32_t group_size = 2000;
+    float                     time       = 0.0f;
+
+    std::vector<Walk>                         tasks;
+    civ::Vector<Walk::Genetic>                genomes;
+    Evolver<conf::input_count, conf::output_count> evolver;
+    Stadium<Walk>                                  stadium;
+
+    std::vector<Vec2> targets;
+    std::vector<Vec2> targets_evaluation;
+
+    Walk  demo_walk;
+    float demo_max_time = 0.0f;
+
+    uint32_t    seed = 7;
+    std::string current_folder;
+    float       best_score = 0.0f;
+
+    std::string fine_tune_directory = "video_1";
+
+    explicit
+    SimulationTraining(Vec2 world_size_)
+        : world_size{world_size_}
+        , stadium{tasks}
+    {
+        demo_max_time = stadium.getTaskTime();
+        // Create genomes
+        restartExploration();
+        // Create evaluation targets
+        generateEvaluationTargets();
+    }
+
+    void restartExploration()
+    {
+        genomes = {};
+        for (uint32_t i{group_size}; i--;) {
+            auto id = genomes.emplace_back();
+            //genomes[id].genome.loadFromFile(fine_tune_directory + "/base.bin");
+            //genomes[id].genome.generateConnections();
+        }
+
+        targets.resize(1000);
+        generateTargets();
+
+        ++seed;
+        RNGf::setSeed(seed);
+        current_folder = "genomes_" + toString(seed);
+        std::filesystem::create_directories(current_folder);
+
+        for (uint32_t i{group_size}; i--;) {
+            Walk& task = tasks.emplace_back();
+            task.genome = genomes.createRefFromData(i);
+            task.targets = targets;
+        }
+
+        evolver.reset();
+        newGeneration();
+
+        best_score = 0.0f;
+    }
+
+    void update(float dt)
+    {
+        if (state == State::Evaluating) {
+            stadium.executeIteration(dt);
+            // Create genomes for next generation
+            newGeneration();
+            // Switch to the demo
+            time = 0.0f;
+            //std::cout << "Iteration done" << std::endl;
+            if (evolver.iteration % 5 == 0) {
+                state = State::Demo;
+                demo_walk.targets = targets_evaluation;
+            }
+        } else if (state == State::Demo) {
+            // Demo
+            demo_walk.update(dt);
+            time += dt;
+            if (time > demo_max_time) {
+                // Switch to evaluation if demo is done
+                state = State::Evaluating;
+                best_score = std::max(demo_walk.genome->score, best_score);
+                std::cout << "Evaluation DONE [" << evolver.iteration << "]: " << demo_walk.genome->score << std::endl;
+                demo_walk.genome->score = 0.0f;
+            }
         }
     }
 
-    void update(float dt);
-
-    void createCreature(std::string const& genome_filename, sf::Color color, std::string const& name)
+    void newGeneration()
     {
-        creatures.emplace_back(conf::world_size * 0.5f);
-        tasks.emplace_back(color);
-        tasks.back().creature_idx = creatures.size() - 1;
-        tasks.back().loadGenome(genome_filename);
-        tasks.back().name = name;
+        const auto new_genomes = evolver.createNewGeneration(genomes.getData());
+
+        if (evolver.iteration % 50 == 0) {
+            new_genomes[0].genome.writeToFile(current_folder + "/best_" + toString(evolver.iteration) + ".bin");
+            //new_genomes[0].genome.writeToFile(fine_tune_directory + "/exp_" + toString(seed) + "_gen_" + toString(evolver.iteration) + "_" + toString(int(best_score)) + ".bin");
+        }
+
+        // Replace current genomes with the new ones
+        genomes.getData() = new_genomes;
+
+        // updateBestNetwork(new_genomes[0].network);
+        //std::cout << "End of iteration " << evolver.iteration << " best: " << new_genomes[0].score << std::endl;
+
+        // Reset genomes for next iteration
+        for (auto& g : genomes) { g.reset(); }
+
+        demo_walk.genome = genomes.createRefFromData(0);
+        demo_walk.targets = targets;
+        demo_walk.initialize();
+
+        generateTargets();
+
+        for (auto& t : tasks) {
+            t.targets = targets;
+        }
+
+        if (evolver.iteration == 10001) {
+            //std::filesystem::rename(current_folder, current_folder + "_" + toString(int(best_score)));
+            restartExploration();
+        }
     }
 
-    void createTargets()
+    void generateTargets()
     {
-        float const target_margin = 0.05f;
-        float const target_max    = (1.0f - target_margin * 2.0f);
         targets.clear();
-        for (uint32_t i{1000}; i--;) {
-            targets.emplace_back(conf::world_size.x * target_margin + RNGf::getUnder(conf::world_size.x * target_max),
-                                 conf::world_size.y * target_margin + RNGf::getUnder(conf::world_size.y * target_max));
+        for (uint32_t i{0}; i < 500; ++i) {
+            targets.push_back(generateOneTarget(conf::maximum_distance));
         }
+        targets[0].y = RNGf::getUnder(world_size.y * 0.5f);
     }
 
-    void createBackground()
+    void generateEvaluationTargets()
     {
-        float const target_margin = 0.0f;
-        float const target_max    = (1.0f - target_margin * 2.0f);
-
-        float const solver_size{static_cast<float>(solver.grid.width)};
-        for (uint32_t i{0}; i < 120000; ++i) {
-            auto const id  = solver.createObject({solver_size * target_margin + RNGf::getUnder(solver_size * target_max),
-                                                  solver_size * target_margin + RNGf::getUnder(solver_size * target_max)});
-            auto&      obj = solver.objects[id];
-            obj.color_ratio = RNGf::getRange(0.4f, 0.6f);
-            obj.current_ratio = obj.color_ratio;
-            obj.color       = sf::Color::White;
+        for (uint32_t i{0}; i < 500; ++i) {
+            targets_evaluation.push_back(generateOneTarget(conf::maximum_distance));
         }
+        targets_evaluation[0].y = RNGf::getUnder(world_size.y * 0.5f);
     }
 
-    void computeGroundCollision()
+    Vec2 generateOneTarget(float radius)
     {
-        float const physic_scale = conf::max_distance / static_cast<float>(solver.grid.width);
-        for (auto& creature : creatures) {
-            for (auto& obj: solver.objects) {
-                for (uint32_t i{0}; i < 4; ++i) {
-                    auto const& pod     = creature.getPod(i);
-                    Vec2 const  pod_pos = pod.position / physic_scale;
-                    Vec2 v = obj.position - pod_pos;
-                    float const dist = MathVec2::length(v);
-                    float const pod_radius = 5.0f * (pod.friction);
-                    if (dist < pod_radius) {
-                        obj.position += (pod_radius - dist) * MathVec2::normalize(v) * 0.25f;
-                    }
-                }
-            }
-        }
-
-        for (auto& obj : solver.objects) {
-            obj.slowdown(0.2f);
-        }
-    }
-
-    void createExplosion(uint32_t target_id, sf::Color color)
-    {
-        float const physic_scale = conf::max_distance / static_cast<float>(solver.grid.width);
-
-        auto const& position     = targets[target_id];
-        auto const  world_pos    = position / physic_scale;
-        float const radius       = 50.0f;
-        float const world_radius = radius / physic_scale;
-        for (auto& obj: solver.objects) {
-
-            Vec2 v = obj.position - world_pos;
-            float const dist = MathVec2::length2(v);
-            if (dist < world_radius * world_radius) {
-                obj.position += (world_radius - sqrt(dist)) * MathVec2::normalize(v) * 0.4f;
-                obj.color = color;
-                obj.radius = 1.0f;
-                obj.current_ratio = 0.75f;
-            }
-        }
-    }
-
-    void createExplosionCone(uint32_t target_id, Creature const& creature, sf::Color color)
-    {
-        float const physic_scale = conf::max_distance / static_cast<float>(solver.grid.width);
-
-        auto const& position     = targets[target_id];
-        auto const  world_pos    = position / physic_scale;
-        float const radius       = 50.0f;
-        float const world_radius = radius / physic_scale;
-        for (auto& obj: solver.objects) {
-            Vec2 const v = obj.position - world_pos;
-            float const d = MathVec2::length(v);
-            Vec2 const  n = v / d;
-            float const dot = MathVec2::dot(n, creature.getHeadDirection());
-            if (dot > 0.6f) {
-                if (d < world_radius) {
-                    obj.position += (world_radius - d) * MathVec2::normalize(v) * 0.6f * dot;
-                    obj.color = color;
-                    obj.radius = 1.0f;
-                    obj.current_ratio = 0.75f;
-                }
-            }
-        }
+        float const angle = RNGf::getUnder(Math::TwoPI);
+        float const dist  = sqrt(RNGf::getUnder(radius * radius));
+        return {conf::maximum_distance * 0.5f + dist * cos(angle), conf::maximum_distance * 0.5f + dist * sin(angle)};
     }
 };

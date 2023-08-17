@@ -279,16 +279,12 @@ struct Genome
         const uint32_t outputs = TOutputs;
 
         std::ifstream infile(filename, std::ios_base::binary);
-        if (!infile) {
-            std::cout << "Couldn't load genome \"" << filename << "\"" << std::endl;
-            return;
-        }
         infile.read((char*)&inputs, sizeof(inputs));
         infile.read((char*)&outputs, sizeof(outputs));
         infile.read((char*)&hidden,  sizeof(hidden));
 
-        //assert(inputs == TInputs);
-        //assert(outputs == TOutputs);
+        assert(inputs == TInputs);
+        assert(outputs == TOutputs);
 
         uint64_t connection_count = 0;
         infile.read((char*)&connection_count, sizeof(connection_count));
@@ -353,6 +349,15 @@ struct Genome
     uint32_t getOutput(uint32_t i) const
     {
         return i + TInputs;
+    }
+
+    void generateConnections()
+    {
+        for (uint32_t input{0}; input < TInputs; ++input) {
+            for (uint32_t output{0}; output < TOutputs; ++output) {
+                createGene(nt::ID(input), nt::ID(output + TInputs), RNGf::getFullRange(2.0f), nt::ID(0));
+            }
+        }
     }
 };
 }

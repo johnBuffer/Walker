@@ -11,7 +11,7 @@
 struct SimulationPlaying
 {
     std::vector<Creature> creatures;
-    std::vector<Task>     tasks;
+    std::vector<WalkTask>     tasks;
     std::vector<Vec2>     targets;
     std::vector<uint32_t> target_remaining;
 

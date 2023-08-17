@@ -7,7 +7,7 @@
 #include "user/common/neat_old/genome.hpp"
 
 
-struct Task
+struct WalkTask
 {
     uint32_t creature_idx = {0};
     uint32_t target_idx   = {0};
@@ -20,8 +20,8 @@ struct Task
     std::string name;
 
     explicit
-    Task(sf::Color color_)
-            : color{color_}
+    WalkTask(sf::Color color_)
+        : color{color_}
     {}
 
     bool update(float dt, Creature& creature, Vec2 target)

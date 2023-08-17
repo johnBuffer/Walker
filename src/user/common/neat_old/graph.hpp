@@ -104,7 +104,7 @@ struct Graph
 			computeDepths();
 		}
 		else {
-			std::cout << "Invalid connection: " << from.value << " -> " << to.value << std::endl;
+			//std::cout << "Invalid connection: " << from.value << " -> " << to.value << std::endl;
 		}
 	}
 
@@ -126,9 +126,9 @@ struct Graph
         }
 
         // Iterate on all nodes and update depths
-        for (const nt::ID& o : order) {
+        for (const nt::ID o : order) {
             auto& n = *getNode(o);
-            // std::cout << "Processing " << o.width << std::endl;
+            // std::cout << "Processing " << o.value << std::endl;
             // If no incoming connection (meaning no dependency) depth is 0
             if (n.ins.empty()) {
                 n.depth = 0;
@@ -138,7 +138,7 @@ struct Graph
                 // meaning that its depth is equal to its deepest parent + 1
                 // std::cout << "INs: ";
                 for (nt::ID i : n.ins) {
-                    // std::cout << i.width << " (" << getNode(i)->depth << ") ";
+                    // std::cout << i.value << " (" << getNode(i)->depth << ") ";
                     n.depth = std::max(n.depth, getNode(i)->depth + 1);
                 }
                 // std::cout << std::endl;

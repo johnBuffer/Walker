@@ -108,12 +108,12 @@ struct Renderer
         context.draw(objects_va, states);
 
         {
-            std::vector<Task const*> sorted_tasks;
+            std::vector<WalkTask const*> sorted_tasks;
             sorted_tasks.reserve(simulation.tasks.size());
             for (auto const& t : simulation.tasks) {
                 sorted_tasks.push_back(&t);
             }
-            std::sort(sorted_tasks.begin(), sorted_tasks.end(), [](Task const* t1, Task const* t2) {return t1->rank <  t2->rank;});
+            std::sort(sorted_tasks.begin(), sorted_tasks.end(), [](WalkTask const* t1, WalkTask const* t2) {return t1->rank <  t2->rank;});
 
             for (auto const* t : sorted_tasks) {
                 auto const target = simulation.targets[t->target_idx];

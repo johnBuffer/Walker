@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "engine/window_context_handler.hpp"
 #include "user/playing/simulation/simulation.hpp"
 
@@ -7,6 +5,7 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/playing/sand/physics.hpp"
+#include "user/training/simulation/simulation.hpp"
 
 
 int main()
