@@ -31,8 +31,8 @@ struct PhysicSolver
     {
         constexpr float response_coef = 0.8f;
         constexpr float eps           = 0.0001f;
-        PhysicObject& obj_1 = objects.data[atom_1_idx];
-        PhysicObject& obj_2 = objects.data[atom_2_idx];
+        PhysicObject& obj_1 = objects.getData()[atom_1_idx];
+        PhysicObject& obj_2 = objects.getData()[atom_2_idx];
         const Vec2 o2_o1  = obj_1.position - obj_2.position;
         const float dist2 = o2_o1.x * o2_o1.x + o2_o1.y * o2_o1.y;
         if (dist2 < 1.0f && dist2 > eps) {
@@ -129,7 +129,7 @@ struct PhysicSolver
         grid.clear();
         // Safety border to avoid adding object outside the grid
         uint32_t i{0};
-        for (const PhysicObject& obj : objects.data) {
+        for (const PhysicObject& obj : objects.getData()) {
             if (obj.position.x > 1.0f && obj.position.x < world_size.x - 1.0f &&
                 obj.position.y > 1.0f && obj.position.y < world_size.y - 1.0f) {
                 grid.addAtom(to<int32_t>(obj.position.x), to<int32_t>(obj.position.y), i);
@@ -142,7 +142,7 @@ struct PhysicSolver
     {
         thread_pool.dispatch(to<uint32_t>(objects.size()), [&](uint32_t start, uint32_t end){
             for (uint32_t i{start}; i < end; ++i) {
-                PhysicObject& obj = objects.data[i];
+                PhysicObject& obj = objects.getData()[i];
                 // Apply Verlet integration
                 obj.update(dt);
                 // Apply map borders collisions

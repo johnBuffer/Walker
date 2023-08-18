@@ -1,5 +1,6 @@
 #pragma once
 #include "smooth.hpp"
+#include "engine/common/vec.hpp"
 
 
 template<typename TTimeType>

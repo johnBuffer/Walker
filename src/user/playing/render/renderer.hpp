@@ -191,7 +191,7 @@ struct Renderer
         const float texture_size = 1024.0f;
         thread_pool.dispatch(to<uint32_t>(solver.objects.size()), [&](uint32_t start, uint32_t end) {
             for (uint32_t i{start}; i < end; ++i) {
-                const PhysicObject& object = solver.objects.data[i];
+                const PhysicObject& object = solver.objects.getData()[i];
                 float const radius = object.radius;
                 const uint32_t idx = i << 2;
                 objects_va[idx + 0].position = object.position + Vec2{-radius, -radius};

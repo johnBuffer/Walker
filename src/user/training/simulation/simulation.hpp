@@ -20,7 +20,6 @@ struct SimulationTraining
     {
         Evaluating     = 0,
         Demo           = 1,
-        NextGeneration = 2,
     };
 
     State state = State::Demo;
@@ -31,7 +30,7 @@ struct SimulationTraining
     float                     time       = 0.0f;
 
     std::vector<Walk>                         tasks;
-    civ::Vector<Walk::Genetic>                genomes;
+    civ::IndexVector<Walk::Genetic>                genomes;
     Evolver<conf::input_count, conf::output_count> evolver;
     Stadium<Walk>                                  stadium;
 

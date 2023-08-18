@@ -7,504 +7,260 @@ namespace civ
 
 using ID = uint64_t;
 
-template<typename T>
-struct Ref;
+/// Forward declaration
+template<typename TObjectType>
+class IndexVector;
 
-template<typename T>
-struct PRef;
-
-struct Slot
+/** Standalone object to access an object
+ *
+ * @tparam TObjectType The object's type
+ */
+template<typename TObjectType>
+class Ref
 {
-    ID id;
-    ID data_id;
-};
-
-
-template<typename T>
-struct ObjectSlot
-{
-    ObjectSlot(ID id_, T* object_)
-        : id(id_)
-        , object(object_)
-    {}
-
-    ID id;
-    T* object;
-};
-
-
-struct GenericProvider
-{
-    virtual ~GenericProvider()
-    {
-
-    }
-
-    virtual void* get(civ::ID id) = 0;
-
-    [[nodiscard]]
-    virtual bool  isValid(civ::ID, uint64_t validity_id) const = 0;
-};
-
-
-template<typename T>
-struct ObjectSlotConst
-{
-    ObjectSlotConst(ID id_, const T* object_)
-        : id(id_)
-        , object(object_)
-    {}
-
-    ID    id;
-    const T* object;
-};
-
-
-struct SlotMetadata
-{
-    ID rid;
-    ID op_id;
-};
-
-
-template<typename T>
-struct Vector : public GenericProvider
-{
-    Vector()
-        : data_size(0)
-        , op_count(0)
-    {}
-
-    ~Vector() override
-    {
-        // Since we already explicitly destroyed objects >= data_size index
-        // the compiler will complain when double freeing these objects.
-        // The quick fix for now is to fill these places with default initialized objects
-        const uint64_t capacity = data.size();
-        for (uint64_t i{data_size}; i<capacity; ++i) {
-            new(&data[i]) T();
-        }
-    }
-
-    // Data ADD / REMOVE
-    template<typename... Args>
-    ID                 emplace_back(Args&&... args);
-    ID                 push_back(const T& obj);
-    [[nodiscard]]
-    ID                 getNextID() const;
-    void               erase(ID id);
-    template<typename TPredicate>
-    void               remove_if(TPredicate&& f);
-    void               clear();
-    // Data access by ID
-    T&                 operator[](ID id);
-    const T&           operator[](ID id) const;
-    // Returns a standalone object allowing access to the underlying data
-    Ref<T>             getRef(ID id);
-    template<typename U>
-    PRef<U>            getPRef(ID id);
-    // Returns the data at a specific place in the data vector (not an ID)
-    T&                 getDataAt(uint64_t i);
-    // Check if the data behind the pointer is the same
-    [[nodiscard]]
-    bool               isValid(ID id, ID validity) const override;
-    [[nodiscard]]
-    uint64_t           getOperationID(ID id) const;
-    // Returns the ith object and global_id
-    ObjectSlot<T>      getSlotAt(uint64_t i);
-    ObjectSlotConst<T> getSlotAt(uint64_t i) const;
-    // Iterators
-    typename std::vector<T>::iterator       begin();
-    typename std::vector<T>::iterator       end();
-    typename std::vector<T>::const_iterator begin() const;
-    typename std::vector<T>::const_iterator end() const;
-    // Number of objects in the provider
-    [[nodiscard]]
-    uint64_t size() const;
-
-    [[nodiscard]]
-    ID getValidityID(ID id) const;
-
 public:
-    std::vector<T>            data;
-    std::vector<uint64_t>     ids;
-    std::vector<SlotMetadata> metadata;
-    uint64_t                  data_size;
-    uint64_t                  op_count;
-
-    [[nodiscard]]
-    bool          isFull() const;
-    // Returns the ID of the ith element of the data provider
-    [[nodiscard]]
-    ID            getID(uint64_t i) const;
-    // Returns the data emplacement of an ID
-    [[nodiscard]]
-    uint64_t      getDataID(ID id) const;
-    Slot          createNewSlot();
-    Slot          getFreeSlot();
-    Slot          getSlot();
-    SlotMetadata& getMetadataAt(ID id);
-    const T&      getAt(ID id) const;
-    [[nodiscard]]
-    void*         get(civ::ID id) override;
-
-    template<typename TCallback>
-    void foreach(TCallback&& callback);
-
-    template<class U> friend struct PRef;
-};
-
-template<typename T>
-template<typename ...Args>
-inline uint64_t Vector<T>::emplace_back(Args&& ...args)
-{
-    const Slot slot = getSlot();
-    new(&data[slot.data_id]) T(std::forward<Args>(args)...);
-    return slot.id;
-}
-
-template<typename T>
-inline uint64_t Vector<T>::push_back(const T& obj)
-{
-    const Slot slot = getSlot();
-    data[slot.data_id] = obj;
-    return slot.id;
-}
-
-template<typename T>
-inline void Vector<T>::erase(ID id)
-{
-    // Retrieve the object position in data
-    const uint64_t data_index = ids[id];
-    // Check if the object has been already erased
-    if (data_index >= data_size) { return; }
-    // Destroy the object
-    data[data_index].~T();
-    // Swap the object at the end
-    --data_size;
-    const uint64_t last_id = metadata[data_size].rid;
-    std::swap(data[data_size], data[data_index]);
-    std::swap(metadata[data_size], metadata[data_index]);
-    std::swap(ids[last_id], ids[id]);
-    // Invalidate the operation ID
-    metadata[data_size].op_id = ++op_count;
-}
-
-template<typename T>
-inline T& Vector<T>::operator[](ID id)
-{
-    return const_cast<T&>(getAt(id));
-}
-
-template<typename T>
-inline const T& Vector<T>::operator[](ID id) const
-{
-    return getAt(id);
-}
-
-template<typename T>
-inline ObjectSlot<T> Vector<T>::getSlotAt(uint64_t i)
-{
-    return ObjectSlot<T>(metadata[i].rid, &data[i]);
-}
-
-template<typename T>
-inline ObjectSlotConst<T> Vector<T>::getSlotAt(uint64_t i) const
-{
-    return ObjectSlotConst<T>(metadata[i].rid, &data[i]);
-}
-
-template<typename T>
-inline Ref<T> Vector<T>::getRef(ID id)
-{
-    return Ref<T>(id, this, metadata[ids[id]].op_id);
-}
-
-template<typename T>
-template<typename U>
-PRef<U> Vector<T>::getPRef(ID id) {
-    return PRef<U>{id, this, metadata[ids[id]].op_id};
-}
-
-template<typename T>
-inline T& Vector<T>::getDataAt(uint64_t i)
-{
-    return data[i];
-}
-
-template<typename T>
-inline uint64_t Vector<T>::getID(uint64_t i) const
-{
-    return metadata[i].rid;
-}
-
-template<typename T>
-inline uint64_t Vector<T>::size() const
-{
-    return data_size;
-}
-
-template<typename T>
-inline typename std::vector<T>::iterator Vector<T>::begin()
-{
-    return data.begin();
-}
-
-template<typename T>
-inline typename std::vector<T>::iterator Vector<T>::end()
-{
-    return data.begin() + data_size;
-}
-
-template<typename T>
-inline typename std::vector<T>::const_iterator Vector<T>::begin() const
-{
-    return data.begin();
-}
-
-template<typename T>
-inline typename std::vector<T>::const_iterator Vector<T>::end() const
-{
-    return data.begin() + data_size;
-}
-
-template<typename T>
-inline bool Vector<T>::isFull() const
-{
-    return data_size == data.size();
-}
-
-template<typename T>
-inline Slot Vector<T>::createNewSlot()
-{
-    data.emplace_back();
-    ids.push_back(data_size);
-    metadata.push_back({data_size, op_count++});
-    return { data_size, data_size };
-}
-
-template<typename T>
-inline Slot Vector<T>::getFreeSlot()
-{
-    const uint64_t reuse_id = metadata[data_size].rid;
-    metadata[data_size].op_id = op_count++;
-    return { reuse_id, data_size };
-}
-
-template<typename T>
-inline Slot Vector<T>::getSlot()
-{
-    const Slot slot = isFull() ? createNewSlot() : getFreeSlot();
-    ++data_size;
-    return slot;
-}
-
-template<typename T>
-inline SlotMetadata& Vector<T>::getMetadataAt(ID id)
-{
-    return metadata[getDataID(id)];
-}
-
-template<typename T>
-inline uint64_t Vector<T>::getDataID(ID id) const
-{
-    return ids[id];
-}
-
-template<typename T>
-inline const T& Vector<T>::getAt(ID id) const
-{
-    return data[getDataID(id)];
-}
-
-template<typename T>
-inline bool Vector<T>::isValid(ID id, ID validity) const
-{
-    return validity == metadata[getDataID(id)].op_id;
-}
-
-template<typename T>
-inline uint64_t Vector<T>::getOperationID(ID id) const
-{
-    return metadata[getDataID(id)].op_id;
-}
-
-template<typename T>
-template<typename TPredicate>
-void Vector<T>::remove_if(TPredicate&& f)
-{
-    for (uint64_t data_index{ 0 }; data_index < data_size;) {
-        if (f(data[data_index])) {
-            erase(metadata[data_index].rid);
-        }
-        else {
-            data_index++;
-        }
-    }
-}
-
-template<typename T>
-ID Vector<T>::getNextID() const {
-    return isFull() ? data_size : metadata[data_size].rid;
-}
-
-template<typename T>
-void *Vector<T>::get(civ::ID id)
-{
-    return static_cast<void*>(&data[ids[id]]);
-}
-
-template<typename T>
-void Vector<T>::clear()
-{
-    ids.clear();
-    data.clear();
-    metadata.clear();
-    for (SlotMetadata& slm : metadata) {
-        slm.rid   = 0;
-        slm.op_id = ++op_count;
-    }
-    data_size = 0;
-}
-
-template<typename T>
-template<typename TCallback>
-void Vector<T>::foreach(TCallback &&callback) {
-    // Use index based for to allow data creation during iteration
-    const uint64_t current_size = data_size;
-    for (uint64_t i{0}; i<current_size; i++) {
-        callback(data[i]);
-    }
-}
-
-template<typename T>
-ID Vector<T>::getValidityID(ID id) const
-{
-    return metadata[ids[id]].op_id;
-}
-
-template<typename T>
-struct Ref
-{
-    Ref()
-        : id(0)
-        , array(nullptr)
-        , validity_id(0)
+    Ref() = default;
+    /// Constructor
+    Ref(ID id, ID validity_id, IndexVector<TObjectType>* vector)
+        : m_id{id}
+        , m_validity_id{validity_id}
+        , m_vector{vector}
     {}
 
-    Ref(ID id_, Vector<T>* a, ID vid)
-        : id(id_)
-        , array(a)
-        , validity_id(vid)
-    {}
-
-    T* operator->()
+    TObjectType* operator->()
     {
-        return &(*array)[id];
+        return &(*m_vector)[m_id];
     }
 
-    const T* operator->() const
+    const TObjectType* operator->() const
     {
-        return &(*array)[id];
+        return &(*m_vector)[m_id];
     }
 
-    T& operator*()
+    TObjectType& operator*()
     {
-        return (*array)[id];
+        return (*m_vector)[m_id];
     }
 
-    const T& operator*() const
+    const TObjectType& operator*() const
     {
-        return (*array)[id];
+        return (*m_vector)[m_id];
     }
 
-    civ::ID getID() const
+    [[nodiscard]]
+    ID getID() const
     {
-        return id;
+        return m_id;
     }
 
-    explicit
-    operator bool() const
+    /** Bool operator to test against the validity of the reference
+     *
+     * @return false if uninitialized or if the object has been erased from the vector, true otherwise
+     */
+    explicit operator bool() const
     {
-        return array && array->isValid(id, validity_id);
-    }
-
-public:
-    ID         id;
-    Vector<T>* array;
-    ID         validity_id;
-};
-
-
-template<typename T>
-struct PRef
-{
-    using ProviderCallback = T*(*)(ID, GenericProvider*);
-
-    PRef()
-        : id(0)
-        , provider_callback(nullptr)
-        , provider(nullptr)
-        , validity_id(0)
-    {}
-
-    template<typename U>
-    PRef(ID index, Vector<U>* a, ID vid)
-        : id(index)
-        , provider_callback{PRef<T>::get<U>}
-        , provider(a)
-        , validity_id(vid)
-    {}
-
-    template<typename U>
-    PRef(const PRef<U>& other)
-        : id(other.id)
-        , provider_callback{PRef<T>::get<U>}
-        , provider(other.provider)
-        , validity_id(other.validity_id)
-    {
-    }
-
-    template<typename U>
-    static T* get(ID index, GenericProvider* provider)
-    {
-        return dynamic_cast<T*>(static_cast<U*>(provider->get(index)));
-    }
-
-    T* operator->()
-    {
-        return provider_callback(id, provider);
-    }
-
-    T& operator*()
-    {
-        return *provider_callback(id, provider);
-    }
-
-    const T& operator*() const
-    {
-        return *provider_callback(id, provider);
-    }
-
-    civ::ID getID() const
-    {
-        return id;
-    }
-
-    explicit
-    operator bool() const
-    {
-        return provider && provider->isValid(id, validity_id);
+        return m_vector && m_vector->isValid(m_id, m_validity_id);
     }
 
 private:
-    ID                  id;
-    ProviderCallback    provider_callback;
-    GenericProvider*    provider;
-    uint64_t            validity_id;
+    ID                        m_id          = 0;
+    ID                        m_validity_id = 0;
+    IndexVector<TObjectType>* m_vector      = nullptr;
+};
 
-    template<class U> friend struct PRef;
-    template<class U> friend struct Vector;
+template<typename TObjectType>
+class IndexVector
+{
+public:
+    IndexVector() = default;
+
+    ID push_back(const TObjectType& object)
+    {
+        const ID id = getSlot();
+        m_data.push_back(object);
+        return id;
+    }
+
+    template<typename... TArgs>
+    ID emplace_back(TArgs&&... args)
+    {
+        const ID id = getSlot();
+        m_data.emplace_back(std::forward<TArgs>(args)...);
+        return id;
+    }
+
+    void erase(ID id)
+    {
+        // Fetch relevant info
+        const ID data_id      = m_indexes[id];
+        const ID last_data_id = m_data.size() - 1;
+        const ID last_id      = m_metadata[last_data_id].rid;
+        // Invalidate m_metadata
+        m_metadata[data_id].validity_id = operation_count++;
+        // Swap the object to delete with the object at the end
+        std::swap(m_data[data_id], m_data[last_data_id]);
+        std::swap(m_metadata[data_id], m_metadata[last_data_id]);
+        std::swap(m_indexes[id], m_indexes[last_id]);
+        // Destroy the object
+        m_data.pop_back();
+    }
+
+    void erase(const Ref<TObjectType>& ref)
+    {
+        erase(ref.getID());
+    }
+
+    ID getSlot()
+    {
+        const ID id = getSlotID();
+        m_indexes[id] = m_data.size();
+        return id;
+    }
+
+    ID getSlotID()
+    {
+        // This means that we have available slots
+        if (m_metadata.size() > m_data.size()) {
+            m_metadata[m_data.size()].validity_id = operation_count++;
+            return m_metadata[m_data.size()].rid;
+        }
+        // A new slot has to be created
+        const ID new_id = m_data.size();
+        m_metadata.push_back({new_id, operation_count++});
+        m_indexes.push_back(new_id);
+        return new_id;
+    }
+
+    [[nodiscard]]
+    uint64_t getDataIndex(ID id) const
+    {
+        return m_indexes[id];
+    }
+
+    TObjectType& operator[](ID id)
+    {
+        return m_data[m_indexes[id]];
+    }
+
+    const TObjectType& operator[](ID id) const
+    {
+        return m_data[m_indexes[id]];
+    }
+
+    [[nodiscard]]
+    size_t size() const
+    {
+        return m_data.size();
+    }
+
+    [[nodiscard]]
+    bool empty() const
+    {
+        return m_data.empty();
+    }
+
+    [[nodiscard]]
+    size_t capacity() const
+    {
+        return m_data.capacity();
+    }
+
+    Ref<TObjectType> createRef(ID id)
+    {
+        return {id, m_metadata[m_indexes[id]].validity_id, this};
+    }
+
+    Ref<TObjectType> createRefFromData(uint64_t idx)
+    {
+        return {m_metadata[idx].rid, m_metadata[idx].validity_id, this};
+    }
+
+    [[nodiscard]]
+    bool isValid(ID id, ID validity_id) const
+    {
+        return validity_id == m_metadata[m_indexes[id]].validity_id;
+    }
+
+    typename std::vector<TObjectType>::iterator begin() noexcept
+    {
+        return m_data.begin();
+    }
+
+    typename std::vector<TObjectType>::iterator end() noexcept
+    {
+        return m_data.end();
+    }
+
+    typename std::vector<TObjectType>::const_iterator begin() const noexcept
+    {
+        return m_data.begin();
+    }
+
+    typename std::vector<TObjectType>::const_iterator end() const noexcept
+    {
+        return m_data.end();
+    }
+
+    template<typename TCallback>
+    void remove_if(TCallback&& callback)
+    {
+        for (uint32_t i{0}; i < m_data.size();) {
+            if (callback(m_data[i])) {
+                erase(m_metadata[i].rid);
+            } else {
+                ++i;
+            }
+        }
+    }
+
+    void reserve(size_t size)
+    {
+        m_data.reserve(size);
+    }
+
+    [[nodiscard]]
+    ID getValidityID(ID id) const
+    {
+        return m_metadata[m_indexes[id]].validity_id;
+    }
+
+    TObjectType* data()
+    {
+        return m_data.data();
+    }
+
+    std::vector<TObjectType>& getData()
+    {
+        return m_data;
+    }
+
+    const std::vector<TObjectType>& getData() const
+    {
+        return m_data;
+    }
+
+    [[nodiscard]]
+    ID getNextID() const
+    {
+        // This means that we have available slots
+        if (m_metadata.size() > m_data.size()) {
+            return m_metadata[m_data.size()].rid;
+        }
+        return m_data.size();;
+    }
+
+private:
+    struct Metadata
+    {
+        ID rid         = 0;
+        ID validity_id = 0;
+    };
+
+    std::vector<TObjectType> m_data;
+    std::vector<Metadata>    m_metadata;
+    std::vector<ID>          m_indexes;
+
+    uint64_t operation_count = 0;
 };
 
 }

@@ -11,7 +11,7 @@ U to(const T& v)
 
 
 template<typename T>
-using CIVector = civ::Vector<T>;
+using CIVector = civ::IndexVector<T>;
 
 
 template<typename T>

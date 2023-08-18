@@ -3,6 +3,9 @@
 
 namespace conf
 {
+constexpr uint32_t window_width  = 1600;
+constexpr uint32_t window_height = 900;
+
 constexpr uint32_t input_count  = 13;
 constexpr uint32_t output_count = 8;
 

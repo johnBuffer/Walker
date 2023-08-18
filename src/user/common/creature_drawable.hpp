@@ -3,6 +3,7 @@
 #include "engine/common/color_utils.hpp"
 
 #include "user/playing/render/target.hpp"
+#include "./creature.hpp"
 
 
 struct CreatureDrawable

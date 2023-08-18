@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "engine/common/vec.hpp"
+#include "engine/common/math.hpp"
+#include "engine/window_context_handler.hpp"
 
 
 struct Card
