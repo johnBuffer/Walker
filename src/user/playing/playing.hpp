@@ -1,11 +1,11 @@
+#pragma once
 #include "engine/window_context_handler.hpp"
-#include "user/playing/simulation/simulation.hpp"
 
-#include "user/playing/render/renderer.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/playing/sand/physics.hpp"
-#include "user/training/simulation/simulation.hpp"
+#include "user/playing/simulation/simulation.hpp"
+#include "user/playing/render/renderer.hpp"
 
 
 struct Playing
@@ -22,7 +22,7 @@ struct Playing
         });
 
         SimulationPlaying simulation;
-        Renderer   renderer{simulation};
+        play::Renderer    renderer{simulation};
         SmoothVec2  focus;
         SmoothFloat zoom;
         focus.setInterpolationFunction(Interpolation::Linear);

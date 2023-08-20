@@ -1,9 +1,11 @@
 #pragma once
+#include <cassert>
+#include <fstream>
+
 #include "engine/common/number_generator.hpp"
 #include "network.hpp"
 #include "graph.hpp"
 #include "gene.hpp"
-#include <fstream>
 #include "neat_id.hpp"
 
 
@@ -279,6 +281,10 @@ struct Genome
         const uint32_t outputs = TOutputs;
 
         std::ifstream infile(filename, std::ios_base::binary);
+        if (!infile) {
+            std::cout << "Cannot open \"" + filename + "\"" << std::endl;
+        }
+
         infile.read((char*)&inputs, sizeof(inputs));
         infile.read((char*)&outputs, sizeof(outputs));
         infile.read((char*)&hidden,  sizeof(hidden));

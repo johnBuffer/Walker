@@ -46,7 +46,7 @@ struct Target
         wave.setOrigin(wave_radius, wave_radius);
         wave.setPosition(position);
         float const ratio = (wave_radius / wave_scale - min_radius) / (max_radius - min_radius);
-        uint8_t const c = 150 * (1.0f - ratio);
+        auto const c = static_cast<uint8_t>(150.0f * (1.0f - ratio));
         wave.setFillColor({255, 255, 255, c});
         context.draw(wave);
 

@@ -9,7 +9,8 @@
 #include "user/common/network_renderer.hpp"
 #include "./creature_card.hpp"
 
-
+namespace play
+{
 struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
@@ -203,7 +204,9 @@ struct Renderer
                 objects_va[idx + 2].texCoords = {texture_size, texture_size};
                 objects_va[idx + 3].texCoords = {0.0f        , texture_size};
 
-                const sf::Color color(object.color.r * object.current_ratio, object.color.g * object.current_ratio, object.color.b * object.current_ratio);
+                const sf::Color color(to<uint8_t>(to<float>(object.color.r) * object.current_ratio),
+                                      to<uint8_t>(to<float>(object.color.g) * object.current_ratio),
+                                      to<uint8_t>(to<float>(object.color.b) * object.current_ratio));
                 objects_va[idx + 0].color = color;
                 objects_va[idx + 1].color = color;
                 objects_va[idx + 2].color = color;
@@ -225,3 +228,4 @@ struct Renderer
         network_out.position = network_renderer.position - out;
     }
 };
+}

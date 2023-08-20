@@ -13,7 +13,7 @@ struct SimulationPlaying
     std::vector<Creature> creatures;
     std::vector<WalkTask>     tasks;
     std::vector<Vec2>     targets;
-    std::vector<uint32_t> target_remaining;
+    std::vector<size_t> target_remaining;
 
     tp::ThreadPool thread_pool;
     PhysicSolver   solver;

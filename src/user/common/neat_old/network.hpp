@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <vector>
+#include <array>
 #include <list>
 #include "network_info.hpp"
 

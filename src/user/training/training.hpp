@@ -18,7 +18,7 @@ struct Training
             emit = !emit;
         });
 
-        SimulationTraining simulation{{conf::maximum_distance, conf::maximum_distance}};
+        SimulationTraining simulation;
         Renderer    renderer{simulation};
         SmoothVec2  focus;
         SmoothFloat zoom;
@@ -50,16 +50,8 @@ struct Training
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
-
-            //app.getRenderContext().setFocus(focus);
-            //app.getRenderContext().setZoom(zoom);
-
             Timer::update(dt);
             simulation.update(dt);
-
-            if (focus_creature != -1) {
-                focus = simulation.creatures[focus_creature].getHeadPosition();
-            }
 
             RenderContext& render_context = app.getRenderContext();
             render_context.clear({80, 80, 80});

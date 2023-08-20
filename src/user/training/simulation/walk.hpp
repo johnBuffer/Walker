@@ -50,15 +50,14 @@ struct Walk : public Task
             dist_to_target / conf::maximum_distance, // Dist to target
             to_target_dot,  // Direction evaluation
             to_target_dot_n, // Direction normal evaluation
+
             creature.getPodFriction(0), // Pods friction
             creature.getPodFriction(1),
             creature.getPodFriction(2),
             creature.getPodFriction(3),
 
             creature.getMuscleRatio(0),
-            creature.getMuscleRatio(1),
-            creature.getMuscleRatio(2),
-            creature.getMuscleRatio(3),
+            creature.getMuscleRatio(1)
         });
 
         for (uint32_t i{0}; i<4; ++i) {
@@ -103,5 +102,11 @@ struct Walk : public Task
     static Vec2 getCenter()
     {
         return 0.5f * Vec2{conf::maximum_distance, conf::maximum_distance};
+    }
+
+    [[nodiscard]]
+    Genetic::CompatNetwork const& getNetwork() const
+    {
+        return genome->network;
     }
 };

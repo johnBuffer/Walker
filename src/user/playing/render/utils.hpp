@@ -3,6 +3,8 @@
 #include <cmath>
 
 
+namespace play
+{
 struct Utils
 {
     static void generateLine(sf::VertexArray& va, uint32_t index, sf::Vector2f point_1, sf::Vector2f point_2, float width, sf::Color color)
@@ -67,3 +69,4 @@ struct Utils
         }
     }
 };
+}

@@ -170,7 +170,7 @@ struct Creature
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
         const float muscle_strength = 0.05f;
-        muscles.emplace_back(system.links.size(), size, contraction, extension);
+        muscles.emplace_back(static_cast<uint32_t>(system.links.size()), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;
         muscle.strength  = muscle_strength;
@@ -184,7 +184,7 @@ struct Creature
 
     void addPod(Vec2 position)
     {
-        pods.emplace_back(system.objects.size());
+        pods.emplace_back(static_cast<uint32_t>(system.objects.size()));
         addJoint(position, 1.0f);
     }
 
