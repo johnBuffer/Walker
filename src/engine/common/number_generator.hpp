@@ -9,14 +9,8 @@ protected:
 	std::mt19937 gen;
 
 	NumberGenerator()
-		: gen(0)
+		: gen(1)
 	{}
-
-public:
-    void setSeed(uint32_t seed)
-    {
-        gen = std::mt19937{seed};
-    }
 };
 
 
@@ -101,11 +95,6 @@ public:
 	{
 		return get() < threshold;
 	}
-
-    static void setSeed(uint32_t seed)
-    {
-        gen.setSeed(seed);
-    }
 };
 
 using RNGf = RNG<float>;
@@ -123,7 +112,7 @@ public:
 	{}
 
 	// random_device is not copyable
-	IntegerNumberGenerator(const IntegerNumberGenerator<T>&)
+	IntegerNumberGenerator(const IntegerNumberGenerator<T>& right)
 		: NumberGenerator()
 	{}
 

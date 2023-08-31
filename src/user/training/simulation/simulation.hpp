@@ -14,7 +14,10 @@
 
 #include "user/training/simulation/walk.hpp"
 
-struct SimulationTraining
+
+namespace training
+{
+struct Simulation
 {
     enum class State : uint8_t
     {
@@ -29,7 +32,7 @@ struct SimulationTraining
     static constexpr uint32_t group_size = 2000;
     float                     time       = 0.0f;
 
-    std::vector<Walk>                         tasks;
+    std::vector<Walk>                              tasks;
     civ::IndexVector<Walk::Genetic>                genomes;
     Evolver<conf::input_count, conf::output_count> evolver;
     Stadium<Walk>                                  stadium;
@@ -47,7 +50,7 @@ struct SimulationTraining
     std::string fine_tune_directory = "video_1";
 
     explicit
-    SimulationTraining(Vec2 world_size_)
+    Simulation(Vec2 world_size_)
         : world_size{world_size_}
         , stadium{tasks}
     {
@@ -171,4 +174,10 @@ struct SimulationTraining
         float const dist  = sqrt(RNGf::getUnder(radius * radius));
         return {conf::maximum_distance * 0.5f + dist * cos(angle), conf::maximum_distance * 0.5f + dist * sin(angle)};
     }
+
+    Walk& getDemoTask()
+    {
+        return tasks.front();
+    }
 };
+}

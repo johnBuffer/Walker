@@ -57,15 +57,13 @@ struct Walk : public Task
 
             creature.getMuscleRatio(0),
             creature.getMuscleRatio(1),
-            creature.getMuscleRatio(2),
-            creature.getMuscleRatio(3),
         });
 
         for (uint32_t i{0}; i<4; ++i) {
             creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
         }
 
-        for (uint32_t i{0}; i<4; ++i) {
+        for (uint32_t i{0}; i<2; ++i) {
             creature.setMuscleRatio(i, output[4 + i]);
         }
 

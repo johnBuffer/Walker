@@ -1,7 +1,7 @@
 #include "simulation.hpp"
 
 
-void SimulationPlaying::update(float dt)
+void playing::Simulation::update(float dt)
 {
     if (time < freeze_time && time > 0.0f) {
         time += dt;

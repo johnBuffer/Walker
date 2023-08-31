@@ -3,18 +3,20 @@
 #include "user/playing/simulation/simulation.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
-#include "utils.hpp"
+#include "user/common/render/utils.hpp"
 #include "user/common/creature_drawable.hpp"
 #include "./target.hpp"
 #include "user/common/network_renderer.hpp"
 #include "./creature_card.hpp"
 
 
+namespace playing
+{
 struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    SimulationPlaying& simulation;
+    Simulation& simulation;
 
     std::vector<CreatureDrawable> creature_drawables;
 
@@ -38,7 +40,7 @@ struct Renderer
     float const network_outline = 10.0f;
 
     explicit
-    Renderer(SimulationPlaying& simulation_)
+    Renderer(Simulation& simulation_)
         : simulation{simulation_}
         , objects_va{sf::PrimitiveType::Quads}
         , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
@@ -164,7 +166,7 @@ struct Renderer
         {
             uint32_t i{0};
             for (auto const &t: simulation.tasks) {
-                cards[i].update(simulation, t.target_idx, simulation.creatures[t.creature_idx]);
+                //cards[i].update(simulation, t.target_idx, simulation.creatures[t.creature_idx]);
                 cards[i].render(context);
                 ++i;
             }
@@ -225,3 +227,4 @@ struct Renderer
         network_out.position = network_renderer.position - out;
     }
 };
+}

@@ -10,6 +10,7 @@ struct RAccBase
     uint32_t current_index;
     T pop_value;
 
+    explicit
     RAccBase(uint32_t max_size=8)
         : max_values_count(max_size)
         , values(max_size, 0.0f)
@@ -20,27 +21,38 @@ struct RAccBase
 
     bool addValueBase(T val)
     {
-        const bool pop = current_index >= max_values_count;
-        const uint32_t i = getIndex();
+        const bool     pop = current_index >= max_values_count;
+        const uint32_t i   = getIndex();
         pop_value = values[i];
         values[i] = val;
         ++current_index;
         return pop;
     }
 
+    [[nodiscard]]
     uint32_t getCount() const
     {
         return std::min(current_index + 1, max_values_count);
     }
 
-    virtual T get() const = 0;
+    [[nodiscard]]
+    bool isOverflowing() const
+    {
+        return current_index >= max_values_count;
+    }
 
+    virtual T get() const
+    {
+        return values[getIndex()];
+    }
+
+    explicit
     operator T() const
     {
         return get();
     }
 
-protected:
+    [[nodiscard]]
     uint32_t getIndex(int32_t offset = 0) const
     {
         return (current_index + offset) % max_values_count;

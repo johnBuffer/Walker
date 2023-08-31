@@ -1,5 +1,4 @@
 #pragma once
-#include "engine/window_context_handler.hpp"
 
 struct Target
 {

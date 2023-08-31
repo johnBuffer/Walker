@@ -1,5 +1,4 @@
 #pragma once
-#include "engine/window_context_handler.hpp"
 #include "engine/common/color_utils.hpp"
 
 #include "user/playing/render/target.hpp"

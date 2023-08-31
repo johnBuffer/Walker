@@ -62,6 +62,15 @@ public:
         return m_vector && m_vector->isValid(m_id, m_validity_id);
     }
 
+    /** Remove the associated object in the container and invalidate the reference
+     *
+     */
+    void destroy()
+    {
+        m_vector->erase(m_id);
+        m_vector = nullptr;
+    }
+
 private:
     ID                        m_id          = 0;
     ID                        m_validity_id = 0;
@@ -168,11 +177,6 @@ public:
     Ref<TObjectType> createRef(ID id)
     {
         return {id, m_metadata[m_indexes[id]].validity_id, this};
-    }
-
-    Ref<TObjectType> createRefFromData(uint64_t idx)
-    {
-        return {m_metadata[idx].rid, m_metadata[idx].validity_id, this};
     }
 
     [[nodiscard]]

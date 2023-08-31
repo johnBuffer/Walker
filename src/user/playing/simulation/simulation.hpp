@@ -8,7 +8,9 @@
 #include "engine/common/color_utils.hpp"
 
 
-struct SimulationPlaying
+namespace playing
+{
+struct Simulation
 {
     std::vector<Creature> creatures;
     std::vector<WalkTask>     tasks;
@@ -21,7 +23,7 @@ struct SimulationPlaying
     float time = 0.0f;
     float const freeze_time = 0.0f;
 
-    SimulationPlaying()
+    Simulation()
         : thread_pool{16}
         , solver(IVec2(480, 480), thread_pool)
     {
@@ -143,3 +145,4 @@ struct SimulationPlaying
         }
     }
 };
+}

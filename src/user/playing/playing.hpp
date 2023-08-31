@@ -5,7 +5,7 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/playing/sand/physics.hpp"
-#include "user/training/simulation/simulation.hpp"
+#include "user/playing/simulation/simulation.hpp"
 
 
 struct Playing
@@ -21,8 +21,8 @@ struct Playing
             emit = !emit;
         });
 
-        SimulationPlaying simulation;
-        Renderer   renderer{simulation};
+        playing::Simulation simulation;
+        playing::Renderer renderer{simulation};
         SmoothVec2  focus;
         SmoothFloat zoom;
         focus.setInterpolationFunction(Interpolation::Linear);
