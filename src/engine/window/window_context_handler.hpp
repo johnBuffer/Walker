@@ -5,14 +5,16 @@
 #include "engine/common/event_manager.hpp"
 #include "engine/engine.hpp"
 
-
+namespace pez::render
+{
 class WindowContextHandler
 {
 public:
     WindowContextHandler(const std::string& window_name,
                          UVec2 window_size,
-                         bool use_viewport_callbacks = true)
-         : m_window{sf::VideoMode{window_size.x, window_size.y}, window_name}
+                         sf::ContextSettings settings,
+                         uint32_t style = sf::Style::Default)
+         : m_window{sf::VideoMode{window_size.x, window_size.y}, window_name, style}
          , m_event_manager(m_window, true)
          , m_render_context(nullptr)
     {
@@ -20,10 +22,10 @@ public:
         pez::core::createSystems();
 
         // Initialize events and render
-        //m_event_manager.initialize(m_window);
-        //m_render_context->initialize(m_window, window_size);
+        m_render_context = pez::core::GlobalInstance::instance->m_render_context;
+        m_render_context->setWindow(m_window);
         // Initialize base shaders
-        registerDefaultCallbacks(use_viewport_callbacks);
+        registerDefaultCallbacks(true);
     }
 
     ~WindowContextHandler()
@@ -41,7 +43,7 @@ public:
     {
         m_running = false;
     }
-    
+
     bool run()
     {
         m_event_manager.processEvents();
@@ -65,12 +67,18 @@ public:
         return m_render_context->m_viewport_handler.state.mouse_position;
     }
 
+    Context& getRenderContext()
+    {
+        return *m_render_context;
+    }
+
     uint64_t target_frame_time = 16;
 
 private:
     sf::RenderWindow   m_window;
-    RenderContext*     m_render_context = nullptr;
+    Context*           m_render_context = nullptr;
     bool               m_running        = true;
     sfev::EventManager m_event_manager;
     uint64_t           m_last_time      = 0;
 };
+}

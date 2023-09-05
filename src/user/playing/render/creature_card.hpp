@@ -97,7 +97,7 @@ struct CreatureCard
         position = pos;
     }
 
-    void render(RenderContext& context)
+    void render(pez::render::Context& context)
     {
         Vec2 const pos = position;
 

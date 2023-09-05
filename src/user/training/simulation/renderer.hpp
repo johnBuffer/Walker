@@ -32,9 +32,9 @@ struct CreatureRenderer : public pez::core::IRenderer
         arena_va.updateGeometry();
     }
 
-    void render(RenderContext& context) override
+    void render(pez::render::Context& context) override
     {
-        context.render(arena_va, Mat4(1.0f), RenderContext::Mode::Normal);
+        context.render(arena_va, Mat4(1.0f), pez::render::Context::Mode::Normal);
 
         const auto& simulation = pez::core::getProcessor<Simulation>();
         Creature const& creature = simulation.demo_walk.creature;
@@ -42,7 +42,7 @@ struct CreatureRenderer : public pez::core::IRenderer
         auto const& links   = creature.system.links;
 
         time_text.setString(toString(simulation.demo_walk.time));
-        context.renderToHUD(time_text, RenderContext::Mode::Normal);
+        context.renderToHUD(time_text, pez::render::Context::Mode::Normal);
 
         // Render links
         links_va.resize(4 * links.size() + 4);
@@ -86,7 +86,7 @@ struct CreatureRenderer : public pez::core::IRenderer
             links_va[4 * i + 3].color = Color::Blue;
         }
         links_va.updateGeometry();
-        context.render(links_va, Mat4(1.0f), RenderContext::Mode::Normal);
+        context.render(links_va, Mat4(1.0f), pez::render::Context::Mode::Normal);
 
         // Render bodies
         objects_va.resize(4 * objects.size());
@@ -107,7 +107,7 @@ struct CreatureRenderer : public pez::core::IRenderer
             }
         }
         objects_va.updateGeometry();
-        context.render(objects_va, object_texture.handle, Mat4(1.0f), RenderContext::Mode::Normal);
+        context.render(objects_va, object_texture.handle, Mat4(1.0f), pez::render::Context::Mode::Normal);
 
         // RenderTarget
         const float target_radius = 20.0f;
@@ -121,6 +121,6 @@ struct CreatureRenderer : public pez::core::IRenderer
         target_va[2].tex_coords = {1.0f, 1.0f};
         target_va[3].tex_coords = {0.0f, 1.0f};
         target_va.updateGeometry();
-        context.render(target_va, object_texture.handle, Mat4(1.0f), RenderContext::Mode::Normal);
+        context.render(target_va, object_texture.handle, Mat4(1.0f), pez::render::Context::Mode::Normal);
     }
 };

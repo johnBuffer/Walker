@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "engine/common/vec.hpp"
 #include "engine/common/math.hpp"
-#include "engine/window_context_handler.hpp"
+#include "engine/render/render_context.hpp"
 
 
 struct Card
@@ -90,14 +90,14 @@ struct Card
         va[global_index++].position = Vec2{0.0f, radius};
     }
 
-    void renderHud(RenderContext& context)
+    void renderHud(pez::render::Context& context)
     {
         sf::Transform transform;
         transform.translate(position);
         context.drawDirect(va, transform);
     }
 
-    void render(RenderContext& context)
+    void render(pez::render::Context& context)
     {
         sf::Transform transform;
         transform.translate(position);

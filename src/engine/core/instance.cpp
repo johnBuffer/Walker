@@ -5,8 +5,8 @@ namespace pez::core
 
 EngineInstance::EngineInstance()
 {
-    m_render_context   = new RenderContext();
-    m_entity_manager   = new EntityManager();
+    m_render_context = new pez::render::Context();
+    m_entity_manager = new EntityManager();
 }
 
 void EngineInstance::quit()

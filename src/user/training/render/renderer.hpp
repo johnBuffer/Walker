@@ -66,7 +66,7 @@ struct Renderer
         background.position = {-25.0f, -25.0f};
     }
 
-    void render(RenderContext& context, float dt) {
+    void render(pez::render::Context& context, float dt) {
         background.render(context);
 
     }

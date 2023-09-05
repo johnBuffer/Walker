@@ -20,7 +20,7 @@ struct IProcessor : public ISystem
 
 struct IRenderer : public ISystem
 {
-    virtual void render(RenderContext& context) {}
+    virtual void render(pez::render::Context& context) {}
 };
 
 template<typename T>
@@ -72,7 +72,7 @@ struct Processor
 template<typename T>
 struct Renderer
 {
-    static void render(RenderContext& context)
+    static void render(pez::render::Context& context)
     {
         System<T>::instance->render(context);
     }

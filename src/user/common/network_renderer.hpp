@@ -101,7 +101,7 @@ struct NetworkRenderer
         }
     }
 
-    void render(RenderContext& context)
+    void render(pez::render::Context& context)
     {
         sf::Transform transform;
         transform.translate(position);

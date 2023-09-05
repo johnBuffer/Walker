@@ -87,13 +87,13 @@ struct CreatureDrawable
         render_target.update(dt);
     }
 
-    void renderTarget(Vec2 target, RenderContext& context)
+    void renderTarget(Vec2 target, pez::render::Context& context)
     {
         render_target.position = target;
         render_target.render(context);
     }
 
-    void render(Creature const& creature, Vec2 target, RenderContext& context)
+    void render(Creature const& creature, Vec2 target, pez::render::Context& context)
     {
         // Bezier
         sf::Color const body_color = ColorUtils::createColor(base_color_vec); //{140, 106, 70};

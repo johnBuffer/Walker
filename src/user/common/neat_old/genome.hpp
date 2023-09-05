@@ -1,9 +1,11 @@
 #pragma once
+#include <fstream>
+#include <cassert>
+
 #include "engine/common/number_generator.hpp"
 #include "network.hpp"
 #include "graph.hpp"
 #include "gene.hpp"
-#include <fstream>
 #include "neat_id.hpp"
 
 

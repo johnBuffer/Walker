@@ -52,3 +52,14 @@ uint64_t getVectorByteSize(const std::vector<T>& v)
 {
     return v.size() * sizeof(T);
 }
+
+template<typename TMax, typename TCallback, typename TData>
+TMax getMax(std::vector<TData> const& v, TCallback&& callback)
+{
+    // Only works for positive values
+    TMax res{0};
+    for (auto const& o : v) {
+        res = std::max(callback(o), res);
+    }
+    return res;
+}

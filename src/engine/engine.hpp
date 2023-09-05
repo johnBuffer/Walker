@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "engine/core/instance.hpp"
 #include "engine/core/timer.hpp"
+#include "./render/render.hpp"
 
 
 namespace pez::core

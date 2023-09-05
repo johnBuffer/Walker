@@ -13,7 +13,7 @@ void pez::core::quit()
 
 void pez::core::render()
 {
-    RenderContext& context = *(GlobalInstance::instance->m_render_context);
+    pez::render::Context& context = *(GlobalInstance::instance->m_render_context);
     context.clear();
     GlobalInstance::instance->m_entity_manager->render(context);
     context.display();

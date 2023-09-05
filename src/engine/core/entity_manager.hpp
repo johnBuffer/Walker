@@ -12,7 +12,7 @@ namespace pez::core
 struct EntityManager
 {
     using ProcessCallback  = void(*)(float);
-    using RenderCallback   = void(*)(RenderContext&);
+    using RenderCallback   = void(*)(pez::render::Context&);
     using VoidCallback     = void(*)();
     using ValidityCallback = bool(*)(const EntityRef&);
 
@@ -111,7 +111,7 @@ struct EntityManager
         }
     }
 
-    void render(RenderContext& context)
+    void render(pez::render::Context& context)
     {
         for (const RenderCallback& f : render_callbacks) {
             f(context);

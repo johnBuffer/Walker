@@ -1,4 +1,4 @@
-#include "engine/window_context_handler.hpp"
+#include "engine/window/window_context_handler.hpp"
 #include "user/playing/simulation/simulation.hpp"
 
 #include "user/playing/render/renderer.hpp"
@@ -14,7 +14,7 @@ struct Playing
     {
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
-        WindowContextHandler app("Walk", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        pez::render::WindowContextHandler app("Walk", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
         // Initialize solver and renderer
         bool emit = true;
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::Space, [&](sfev::CstEv) {
@@ -42,29 +42,24 @@ struct Playing
             focus_creature = -1;
             focus = conf::world_size * 0.5f;
             zoom  = conf::window_height / conf::maximum_distance * 0.95f;
-            app.getRenderContext().setFocus(conf::world_size * 0.5f);
-            app.getRenderContext().setZoom(conf::window_height / conf::maximum_distance * 0.95f);
+            pez::render::setFocus(conf::world_size * 0.5f);
+            pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
         });
 
-        //app.getRenderContext().setZoom(3.0f);
+        //app.getpez::render::Context().setZoom(3.0f);
 
         constexpr uint32_t fps_cap = 60;
 
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
-
-            //app.getRenderContext().setFocus(focus);
-            //app.getRenderContext().setZoom(zoom);
-
-            Timer::update(dt);
             simulation.update(dt);
 
             if (focus_creature != -1) {
                 focus = simulation.creatures[focus_creature].getHeadPosition();
             }
 
-            RenderContext& render_context = app.getRenderContext();
+            pez::render::Context& render_context = app.getRenderContext();
             render_context.clear({80, 80, 80});
             renderer.render(render_context, dt);
             render_context.display();

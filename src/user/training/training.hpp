@@ -11,7 +11,7 @@ struct Training
     {
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
-        WindowContextHandler app("Walk - Training", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        pez::render::WindowContextHandler app("Walk - Training", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
         // Initialize solver and renderer
         training::Simulation simulation{{conf::maximum_distance, conf::maximum_distance}};
         training::Renderer   renderer{simulation};
@@ -34,8 +34,8 @@ struct Training
             focus_creature = -1;
             focus = conf::world_size * 0.5f;
             zoom  = conf::window_height / conf::maximum_distance * 0.95f;
-            app.getRenderContext().setFocus(conf::world_size * 0.5f);
-            app.getRenderContext().setZoom(conf::window_height / conf::maximum_distance * 0.95f);
+            pez::render::setFocus(conf::world_size * 0.5f);
+            pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
         });
 
         constexpr uint32_t fps_cap = 60;
@@ -43,10 +43,9 @@ struct Training
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
-            Timer::update(dt);
             simulation.update(dt);
 
-            RenderContext& render_context = app.getRenderContext();
+            pez::render::Context& render_context = app.getRenderContext();
             render_context.clear({80, 80, 80});
             renderer.render(render_context, dt);
             render_context.display();

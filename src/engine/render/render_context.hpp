@@ -6,11 +6,13 @@
 #include "viewport_handler.hpp"
 
 
-class RenderContext
+namespace pez::render
+{
+class Context
 {
 public:
-    RenderContext()  = default;
-    ~RenderContext() = default;
+    Context()  = default;
+    ~Context() = default;
 
     IVec2 m_size = {};
     float scale  = 1.0f;
@@ -27,7 +29,7 @@ public:
             event_manager.addMouseReleasedCallback(sf::Mouse::Left, [&](sfev::CstEv) {
                 m_viewport_handler.unclick();
             });
-            event_manager.addEventCallback(sf::Event::MouseWheelMoved, [&](sfev::CstEv e) {
+            event_manager.addEventCallback(sf::Event::MouseWheelScrolled, [&](sfev::CstEv e) {
                 m_viewport_handler.wheelZoom(e.mouseWheelScroll.delta);
             });
         }
@@ -43,12 +45,15 @@ public:
         m_viewport_handler.setZoom(zoom);
     }
 
-    void clear()
+    void clear(sf::Color color = sf::Color::Black)
     {
-        m_window->clear(sf::Color::Black);
+        m_window->clear(color);
     }
 
-    void display();
+    void display()
+    {
+        m_window->display();
+    }
 
     [[nodiscard]]
     IVec2 getRenderSize() const
@@ -70,14 +75,41 @@ public:
 
     void draw(sf::Drawable& drawable)
     {
+        m_window->draw(drawable, m_viewport_handler.getTransform());
+    }
 
+    void draw(sf::Drawable& drawable, sf::Transform const& transform)
+    {
+        m_window->draw(drawable, m_viewport_handler.getTransform() * transform);
+    }
+
+    void draw(sf::Drawable& drawable, sf::RenderStates const& states)
+    {
+        sf::RenderStates final_states = states;
+        final_states.transform = m_viewport_handler.getTransform() * states.transform;
+        m_window->draw(drawable, final_states);
+    }
+
+    void drawDirect(sf::Drawable& drawable)
+    {
+        m_window->draw(drawable);
+    }
+
+    void drawDirect(sf::Drawable& drawable, sf::Transform const& transform)
+    {
+        m_window->draw(drawable, transform);
     }
 
 private:
-
     IVec2             m_render_size       = {};
     ViewportHandler   m_viewport_handler;
     sf::RenderWindow* m_window            = nullptr;
 
+    void setWindow(sf::RenderWindow& window)
+    {
+        m_window = &window;
+    }
+
     friend class WindowContextHandler;
 };
+}

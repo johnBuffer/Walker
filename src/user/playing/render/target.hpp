@@ -39,7 +39,7 @@ struct Target
         }
     }
 
-    void render(RenderContext& context) const
+    void render(pez::render::Context& context) const
     {
         sf::CircleShape wave(wave_radius);
         wave.setOrigin(wave_radius, wave_radius);

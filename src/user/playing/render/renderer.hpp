@@ -1,5 +1,5 @@
 #pragma once
-#include "engine/window_context_handler.hpp"
+#include "engine/window/window_context_handler.hpp"
 #include "user/playing/simulation/simulation.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
@@ -98,7 +98,7 @@ struct Renderer
         hud_va[3].color = {0, 0, 0, 150};
     }
 
-    void render(RenderContext& context, float dt)
+    void render(pez::render::Context& context, float dt)
     {
         background.render(context);
 
