@@ -30,8 +30,9 @@ struct ViewportHandler
         void updateState()
         {
             transform = {};
-            transform.translate(offset);
+            transform.translate(center);
             transform.scale(zoom, zoom);
+            transform.translate(offset);
         }
 
         void updateMousePosition(Vec2 new_position)
@@ -99,14 +100,14 @@ struct ViewportHandler
     void setMousePosition(Vec2 new_mouse_position)
     {
         if (state.clicking) {
-            addOffset(state.mouse_position - new_mouse_position);
+            addOffset(new_mouse_position - state.mouse_position);
         }
         state.updateMousePosition(new_mouse_position);
     }
 
     void setFocus(Vec2 focus_position)
     {
-        state.offset = focus_position;
+        state.offset = -focus_position;
         state.updateState();
     }
 

@@ -14,7 +14,7 @@ public:
                          UVec2 window_size,
                          sf::ContextSettings settings,
                          uint32_t style = sf::Style::Default)
-         : m_window{sf::VideoMode{window_size.x, window_size.y}, window_name, style}
+         : m_window{sf::VideoMode{window_size.x, window_size.y}, window_name, style, settings}
          , m_event_manager(m_window, true)
          , m_render_context(nullptr)
     {

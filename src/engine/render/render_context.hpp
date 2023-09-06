@@ -108,6 +108,8 @@ private:
     void setWindow(sf::RenderWindow& window)
     {
         m_window = &window;
+        auto const window_size = static_cast<Vec2>(m_window->getSize());
+        m_viewport_handler.state.center = Vec2{window_size * 0.5f};
     }
 
     friend class WindowContextHandler;
