@@ -17,6 +17,7 @@ struct Renderer
     static constexpr uint32_t circle_pts = 32;
 
     Simulation& simulation;
+    tp::ThreadPool& thread_pool;
 
     std::vector<CreatureDrawable> creature_drawables;
 
@@ -42,6 +43,7 @@ struct Renderer
     explicit
     Renderer(Simulation& simulation_)
         : simulation{simulation_}
+        , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
         , objects_va{sf::PrimitiveType::Quads}
         , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
         , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
@@ -186,8 +188,7 @@ struct Renderer
 
     void updateParticlesVA()
     {
-        auto const& solver      = simulation.solver;
-        auto&       thread_pool = simulation.thread_pool;
+        auto const& solver = simulation.solver;
         objects_va.resize(solver.objects.size() * 4);
 
         const float texture_size = 1024.0f;

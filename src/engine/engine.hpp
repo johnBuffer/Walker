@@ -63,7 +63,7 @@ T& getRenderer()
 template<typename T>
 T& getSingleton()
 {
-    return *core::System<T>::instance;
+    return *core::Singleton<T>::instance;
 }
 
 template<typename T, typename... Arg>

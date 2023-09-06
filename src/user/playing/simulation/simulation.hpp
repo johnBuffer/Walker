@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/engine.hpp"
 #include "engine/common/number_generator.hpp"
 
 #include "./task.hpp"
@@ -10,22 +11,21 @@
 
 namespace playing
 {
-struct Simulation
+
+struct Simulation : public pez::core::IProcessor
 {
+    PhysicSolver& solver;
+
     std::vector<Creature> creatures;
-    std::vector<WalkTask>     tasks;
+    std::vector<WalkTask> tasks;
     std::vector<Vec2>     targets;
     std::vector<uint32_t> target_remaining;
-
-    tp::ThreadPool thread_pool;
-    PhysicSolver   solver;
 
     float time = 0.0f;
     float const freeze_time = 0.0f;
 
     Simulation()
-        : thread_pool{16}
-        , solver(IVec2(480, 480), thread_pool)
+        : solver{pez::core::getProcessor<PhysicSolver>()}
     {
         createTargets();
         createBackground();
@@ -39,7 +39,7 @@ struct Simulation
         }
     }
 
-    void update(float dt);
+    void update(float dt) override;
 
     void createCreature(std::string const& genome_filename, sf::Color color, std::string const& name)
     {

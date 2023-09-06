@@ -83,13 +83,12 @@ struct EntityManager
     template<typename T, typename... Arg>
     void registerSingleton(Arg&&... args)
     {
-        if (System<T>::isRegistered()) {
-            std::cout << "WARNING: Processor already registered" << std::endl;
+        if (Singleton<T>::isRegistered()) {
+            std::cout << "WARNING: Singleton already registered" << std::endl;
             return;
         }
-        static_assert(std::is_convertible<T*, IProcessor*>::value, "Provided class is not a Processor");
-        System<T>::create(std::forward<Arg>(args)...);
-        clear_systems.push_back(System<T>::clear);
+        Singleton<T>::create(std::forward<Arg>(args)...);
+        clear_systems.push_back(Singleton<T>::clear);
     }
 
     void updateEntities(float dt)

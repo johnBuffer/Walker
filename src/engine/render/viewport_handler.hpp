@@ -40,6 +40,12 @@ struct ViewportHandler
             mouse_position = new_position;
             mouse_world_position = offset + (mouse_position * scale - center) / (zoom * scale);
         }
+
+        void setCenter(Vec2 c)
+        {
+            center = c;
+            updateState();
+        }
     };
 
     State state;

@@ -1,4 +1,6 @@
 #pragma once
+#include "engine/engine.hpp"
+
 #include "collision_grid.hpp"
 #include "physic_object.hpp"
 #include "engine/common/utils.hpp"
@@ -6,22 +8,22 @@
 #include "user/common/thread_pool/thread_pool.hpp"
 
 
-struct PhysicSolver
+struct PhysicSolver : public pez::core::IProcessor
 {
     CIVector<PhysicObject> objects;
     CollisionGrid          grid;
     Vec2                   world_size;
-    Vec2                   gravity = {0.0f, 20.0f};
 
     // Simulation solving pass count
     uint32_t        sub_steps;
     tp::ThreadPool& thread_pool;
 
-    PhysicSolver(IVec2 size, tp::ThreadPool& tp)
+    explicit
+    PhysicSolver(IVec2 size)
         : grid{size.x, size.y}
         , world_size{to<float>(size.x), to<float>(size.y)}
         , sub_steps{3}
-        , thread_pool{tp}
+        , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
     {
         grid.clear();
     }
@@ -113,7 +115,7 @@ struct PhysicSolver
         return objects.emplace_back(pos);
     }
 
-    void update(float dt)
+    void update(float dt) override
     {
         // Perform the sub steps
         const float sub_dt = dt / static_cast<float>(sub_steps);

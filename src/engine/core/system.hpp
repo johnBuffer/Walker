@@ -23,6 +23,7 @@ struct IRenderer : public ISystem
     virtual void render(pez::render::Context& context) {}
 };
 
+/// System
 template<typename T>
 struct System
 {
@@ -57,6 +58,37 @@ struct System
 
 template<typename T>
 std::unique_ptr<T> System<T>::instance = nullptr;
+
+/// Singleton (no update function)
+template<typename T>
+struct Singleton
+{
+    static std::unique_ptr<T> instance;
+
+    template<typename... Arg>
+    static void create(Arg&&... args)
+    {
+        instance = std::make_unique<T>(std::forward<Arg>(args)...);
+    }
+
+    static T& get()
+    {
+        return *instance;
+    }
+
+    static void clear()
+    {
+        instance = nullptr;
+    }
+
+    static bool isRegistered()
+    {
+        return instance != nullptr;
+    }
+};
+
+template<typename T>
+std::unique_ptr<T> Singleton<T>::instance = nullptr;
 
 
 template<typename T>

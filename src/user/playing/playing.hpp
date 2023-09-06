@@ -1,11 +1,10 @@
 #include "engine/window/window_context_handler.hpp"
-#include "user/playing/simulation/simulation.hpp"
 
 #include "user/playing/render/renderer.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/playing/sand/physics.hpp"
-#include "user/playing/simulation/simulation.hpp"
+#include "user/playing/initialize.hpp"
 
 
 struct Playing
@@ -15,13 +14,14 @@ struct Playing
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
         pez::render::WindowContextHandler app("Walk", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        playing::registerSystems();
         // Initialize solver and renderer
         bool emit = true;
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::Space, [&](sfev::CstEv) {
             emit = !emit;
         });
 
-        playing::Simulation simulation;
+        auto& simulation = pez::core::getProcessor<playing::Simulation>();
         playing::Renderer renderer{simulation};
         SmoothVec2  focus;
         SmoothFloat zoom;
@@ -46,14 +46,12 @@ struct Playing
             pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
         });
 
-        //app.getpez::render::Context().setZoom(3.0f);
-
         constexpr uint32_t fps_cap = 60;
 
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
-            simulation.update(dt);
+            pez::core::update(dt);
 
             if (focus_creature != -1) {
                 focus = simulation.creatures[focus_creature].getHeadPosition();
