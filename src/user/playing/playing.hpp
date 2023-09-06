@@ -13,7 +13,7 @@ struct Playing
     {
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
-        pez::render::WindowContextHandler app("Walk", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        pez::render::WindowContextHandler app("Walk - Replay", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
         playing::registerSystems();
         // Initialize solver and renderer
         bool emit = true;
@@ -45,6 +45,9 @@ struct Playing
             pez::render::setFocus(conf::world_size * 0.5f);
             pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
         });
+
+        pez::render::setFocus(conf::world_size * 0.5f);
+        pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
 
         constexpr uint32_t fps_cap = 60;
 

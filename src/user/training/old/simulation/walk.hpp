@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-#include "user/training/stadium/task.hpp"
+#include "user/training/old/stadium/task.hpp"
 #include "user/common/creature.hpp"
 #include "user/common/configuration.hpp"
 

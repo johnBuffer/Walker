@@ -1,3 +1,8 @@
 #pragma once
-#include "engine/engine.hpp"
 
+namespace training
+{
+
+void registerSystems();
+
+}

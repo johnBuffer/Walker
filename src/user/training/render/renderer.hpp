@@ -7,16 +7,12 @@
 #include "user/common/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
-#include "user/training/simulation/simulation.hpp"
-
 
 namespace training
 {
 struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
-
-    Simulation& simulation;
 
     CreatureDrawable creature_drawables;
 
@@ -36,9 +32,8 @@ struct Renderer
     float const network_outline = 10.0f;
 
     explicit
-    Renderer(Simulation& simulation_)
-        : simulation{simulation_}
-        , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
+    Renderer()
+        : shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
         , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
         , network_back({}, 0.0f, sf::Color{50, 50, 50})
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
@@ -49,7 +44,7 @@ struct Renderer
         text.setCharacterSize(200);
         text.setFillColor(sf::Color::Black);
 
-        for (auto const& t : simulation.tasks) {
+        /*for (auto const& t : simulation.tasks) {
             Vec2 const padding{network_padding, network_padding};
             Vec2 const out = padding + Vec2{network_outline, network_outline};
             network_renderer.initialize(t.genome->network);
@@ -58,7 +53,7 @@ struct Renderer
             network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
             network_back.position = network_renderer.position - padding;
             network_out.position = network_renderer.position - out;
-        }
+        }*/
 
         Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
@@ -73,7 +68,7 @@ struct Renderer
 
     void setNetwork(uint32_t i)
     {
-        auto const& t = simulation.tasks[i];
+        /*auto const& t = simulation.tasks[i];
         Vec2 const padding{network_padding, network_padding};
         Vec2 const out = padding + Vec2{network_outline, network_outline};
         network_renderer.initialize(t.genome->network);
@@ -81,7 +76,7 @@ struct Renderer
         network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
         network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
         network_back.position = network_renderer.position - padding;
-        network_out.position = network_renderer.position - out;
+        network_out.position = network_renderer.position - out;*/
     }
 };
 }

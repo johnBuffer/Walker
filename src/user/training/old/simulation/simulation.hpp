@@ -3,16 +3,17 @@
 
 #include "engine/common/index_vector.hpp"
 
-#include "user/training/stadium/selector.hpp"
+
 #include "user/common/neat_old/nn_utils.hpp"
 #include "user/common/neat_old/mutator.hpp"
-#include "user/training/stadium/genetic_info.hpp"
 #include "user/common/thread_pool/thread_pool.hpp"
 
-#include "user/training/stadium/stadium.hpp"
-#include "user/training/stadium/evolver.hpp"
+#include "user/training/old/stadium/selector.hpp"
+#include "user/training/old/stadium/genetic_info.hpp"
+#include "user/training/old/stadium/stadium.hpp"
+#include "user/training/old/stadium/evolver.hpp"
 
-#include "user/training/simulation/walk.hpp"
+#include "walk.hpp"
 
 
 namespace training
@@ -50,8 +51,8 @@ struct Simulation
     std::string fine_tune_directory = "video_1";
 
     explicit
-    Simulation(Vec2 world_size_)
-        : world_size{world_size_}
+    Simulation()
+        : world_size{conf::maximum_distance, conf::maximum_distance}
         , stadium{tasks}
     {
         demo_max_time = stadium.getTaskTime();

@@ -4,6 +4,6 @@
 
 int main()
 {
-    return Playing::main();
-    //return Training::main();
+    //return Playing::main();
+    return Training::main();
 }
