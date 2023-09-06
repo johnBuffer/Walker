@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "engine/common/vec.hpp"
 
@@ -72,7 +71,6 @@ struct ViewportHandler
 
     void wheelZoom(float w)
     {
-        std::cout << w << std::endl;
         if (w != 0.0f) {
             const float zoom_amount = 1.2f;
             const float delta = w > 0 ? zoom_amount : 1.0f / zoom_amount;

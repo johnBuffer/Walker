@@ -30,8 +30,8 @@ struct Card
 
     void setColor(sf::Color color)
     {
-        uint32_t const vertex_count = va.getVertexCount();
-        for (uint32_t i{vertex_count}; i--;) {
+        uint64_t const vertex_count = va.getVertexCount();
+        for (uint64_t i{vertex_count}; i--;) {
             va[i].color = color;
         }
     }

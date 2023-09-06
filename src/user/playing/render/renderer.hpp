@@ -206,7 +206,10 @@ struct Renderer
                 objects_va[idx + 2].texCoords = {texture_size, texture_size};
                 objects_va[idx + 3].texCoords = {0.0f        , texture_size};
 
-                const sf::Color color(object.color.r * object.current_ratio, object.color.g * object.current_ratio, object.color.b * object.current_ratio);
+                const sf::Color color(static_cast<uint8_t>(static_cast<float>(object.color.r) * object.current_ratio),
+                                      static_cast<uint8_t>(static_cast<float>(object.color.g) * object.current_ratio),
+                                      static_cast<uint8_t>(static_cast<float>(object.color.b) * object.current_ratio));
+
                 objects_va[idx + 0].color = color;
                 objects_va[idx + 1].color = color;
                 objects_va[idx + 2].color = color;

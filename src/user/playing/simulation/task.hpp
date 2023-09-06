@@ -11,14 +11,14 @@
 
 struct WalkTask
 {
-    uint32_t creature_idx = {0};
-    uint32_t target_idx   = {0};
+    uint64_t creature_idx = {0};
+    uint64_t target_idx   = {0};
     nt::Genome<9, 6>  genome;
     nt::Network<9, 6> network;
 
     sf::Color color;
 
-    uint32_t rank = 0;
+    uint64_t rank = 0;
     std::string name;
 
     explicit

@@ -19,7 +19,7 @@ struct Simulation : public pez::core::IProcessor
     std::vector<Creature> creatures;
     std::vector<WalkTask> tasks;
     std::vector<Vec2>     targets;
-    std::vector<uint32_t> target_remaining;
+    std::vector<uint64_t> target_remaining;
 
     float time = 0.0f;
     float const freeze_time = 0.0f;
@@ -30,8 +30,7 @@ struct Simulation : public pez::core::IProcessor
         createTargets();
         createBackground();
 
-        createCreature("res/04.bin", {121, 123, 255}, "Solution 1");
-        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 4");
+        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 1");
 
         target_remaining.resize(targets.size());
         for (auto& t : target_remaining) {
@@ -100,7 +99,7 @@ struct Simulation : public pez::core::IProcessor
         }
     }
 
-    void createExplosion(uint32_t target_id, sf::Color color)
+    void createExplosion(uint64_t target_id, sf::Color color)
     {
         float const physic_scale = conf::maximum_distance / static_cast<float>(solver.grid.width);
 
@@ -109,7 +108,6 @@ struct Simulation : public pez::core::IProcessor
         float const radius       = 50.0f;
         float const world_radius = radius / physic_scale;
         for (auto& obj: solver.objects) {
-
             Vec2 v = obj.position - world_pos;
             float const dist = MathVec2::length2(v);
             if (dist < world_radius * world_radius) {
@@ -117,30 +115,6 @@ struct Simulation : public pez::core::IProcessor
                 obj.color = color;
                 obj.radius = 1.0f;
                 obj.current_ratio = 0.75f;
-            }
-        }
-    }
-
-    void createExplosionCone(uint32_t target_id, Creature const& creature, sf::Color color)
-    {
-        float const physic_scale = conf::maximum_distance / static_cast<float>(solver.grid.width);
-
-        auto const& position     = targets[target_id];
-        auto const  world_pos    = position / physic_scale;
-        float const radius       = 50.0f;
-        float const world_radius = radius / physic_scale;
-        for (auto& obj: solver.objects) {
-            Vec2 const v = obj.position - world_pos;
-            float const d = MathVec2::length(v);
-            Vec2 const  n = v / d;
-            float const dot = MathVec2::dot(n, creature.getHeadDirection());
-            if (dot > 0.6f) {
-                if (d < world_radius) {
-                    obj.position += (world_radius - d) * MathVec2::normalize(v) * 0.6f * dot;
-                    obj.color = color;
-                    obj.radius = 1.0f;
-                    obj.current_ratio = 0.75f;
-                }
             }
         }
     }
