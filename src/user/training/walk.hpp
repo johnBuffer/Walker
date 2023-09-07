@@ -12,6 +12,11 @@ struct Walk : public training::Task
         : Task{id_}
     {}
 
+    void initialize() override
+    {
+
+    }
+
     void update(float dt) override
     {
 

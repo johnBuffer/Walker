@@ -1,8 +1,10 @@
 #pragma once
 #include "engine/engine.hpp"
 
+
 namespace training
 {
+
 struct Task : public pez::core::Entity
 {
     Task() = default;
@@ -25,4 +27,5 @@ struct Task : public pez::core::Entity
     [[nodiscard]]
     virtual bool done() const { return false; }
 };
+
 }

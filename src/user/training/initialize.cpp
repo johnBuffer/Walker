@@ -21,7 +21,7 @@ void registerSystems()
 
     pez::core::registerProcessor<Stadium>();
 
-    //pez::core::registerDataEntity<Genome>();
+    pez::core::registerDataEntity<Genome>();
     pez::core::registerDataEntity<Walk>();
 }
 
