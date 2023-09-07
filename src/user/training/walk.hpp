@@ -1,22 +1,25 @@
 #pragma once
 #include "engine/engine.hpp"
 
+#include "user/training/task.hpp"
 
-struct Walk : public pez::core::Entity
+struct Walk : public training::Task
 {
-    pez::core::ID agent_id  = pez::core::EntityID::INVALID_ID;
-    pez::core::ID genome_id = pez::core::EntityID::INVALID_ID;
-
     Walk() = default;
 
     explicit
     Walk(pez::core::EntityID id_)
-        : pez::core::Entity{id_}
+        : Task{id_}
+    {}
+
+    void update(float dt) override
     {
+
     }
 
-    void update(float dt)
+    [[nodiscard]]
+    bool done() const override
     {
-
+        return false;
     }
 };

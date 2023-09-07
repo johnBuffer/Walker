@@ -1,8 +1,17 @@
 #pragma once
+#include "engine/engine.hpp"
 
-
-struct Task
+namespace training
 {
+struct Task : public pez::core::Entity
+{
+    Task() = default;
+
+    explicit
+    Task(pez::core::EntityID id_)
+        : pez::core::Entity{id_}
+    {}
+
     /// Prepare for the task before its execution
     virtual void initialize() = 0;
 
@@ -10,9 +19,10 @@ struct Task
     virtual void update(float dt) = 0;
 
     /// Compute the resulting score
-    virtual void computeScore() = 0;
+    virtual void computeScore() {};
 
     /// Check if the the task is finished
     [[nodiscard]]
-    virtual bool done() const = 0;
+    virtual bool done() const { return false; }
 };
+}

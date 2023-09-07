@@ -7,6 +7,8 @@
 #include "user/training/genome.hpp"
 #include "user/training/agent.hpp"
 #include "user/training/target_sequence.hpp"
+#include "user/training/training_state.hpp"
+#include "user/training/walk.hpp"
 
 
 namespace training
@@ -15,10 +17,12 @@ namespace training
 void registerSystems()
 {
     pez::core::registerSingleton<tp::ThreadPool>(16);
+    pez::core::registerSingleton<TrainingState>();
 
     pez::core::registerProcessor<Stadium>();
 
-    pez::core::registerDataEntity<Genome>();
+    //pez::core::registerDataEntity<Genome>();
+    pez::core::registerDataEntity<Walk>();
 }
 
 }

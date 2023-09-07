@@ -9,7 +9,6 @@ struct Genome : public pez::core::Entity
 {
     /// Attributes
     float score = 0.0f;
-
     nt::Genome<conf::input_count, conf::output_count> genome;
 
     /// Methods
