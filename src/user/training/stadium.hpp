@@ -10,6 +10,7 @@ struct Stadium : public pez::core::IProcessor
 {
     TrainingState&  state;
     tp::ThreadPool& thread_pool;
+    Evolver<conf::input_count, conf::output_count> evolver;
 
     Stadium()
         : state{pez::core::getSingleton<TrainingState>()}
@@ -26,6 +27,8 @@ struct Stadium : public pez::core::IProcessor
         state.addIteration();
 
         executeTasks(dt);
+
+        evolver.createNewGeneration();
     }
 
     void executeTasks(float dt)

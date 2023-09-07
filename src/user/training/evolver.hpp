@@ -3,6 +3,7 @@
 
 #include "./selector.hpp"
 #include "user/common/neat_old/mutator.hpp"
+#include "user/common/neat_old/nn_utils.hpp"
 #include "user/training/genome.hpp"
 
 
@@ -32,7 +33,7 @@ struct Evolver
         mutator = {};
     }
 
-    GenomeVector createNewGeneration(const GenomeVector& current_genomes)
+    void createNewGeneration()
     {
         fetchOldPopulation();
         new_generation.clear();
@@ -52,7 +53,7 @@ struct Evolver
 
         {
             uint32_t i{0};
-            for (const auto& g: genomes_copy) {
+            for (const auto& g: old_generation) {
                 selector.addEntry(i, g.score);
                 ++i;
             }
@@ -60,17 +61,15 @@ struct Evolver
         selector.normalizeEntries();
 
         // Create new genomes
-        while (new_genomes.size() < population_size) {
+        while (new_generation.size() < conf::population_size) {
             const uint32_t genome_idx = selector.pick();
-            new_genomes.push_back(genomes_copy[genome_idx]);
-            auto& new_gen = new_genomes.back();
+            new_generation.push_back(old_generation[genome_idx]);
+            auto& new_genome = new_generation.back();
             // Mutate topology
-            mutator.mutate(new_gen.genome);
+            mutator.mutate(new_genome.genome);
             // Mutate weights
-            nn::Utils::mutate(new_gen.genome);
+            nn::Utils::mutate(new_genome.genome);
         }
-
-        return new_genomes;
     }
 
     void fetchOldPopulation()
@@ -78,6 +77,15 @@ struct Evolver
         uint32_t i{0};
         pez::core::foreach<Genome>([&](Genome& genome) {
             old_generation[i] = genome;
+            ++i;
+        });
+    }
+
+    void updatePopulation()
+    {
+        uint32_t i{0};
+        pez::core::foreach<Genome>([&](Genome& genome) {
+            genome.genome = new_generation[i];
             ++i;
         });
     }
