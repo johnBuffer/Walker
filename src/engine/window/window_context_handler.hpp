@@ -18,6 +18,7 @@ public:
          , m_event_manager(m_window, true)
          , m_render_context(nullptr)
     {
+        m_window.setFramerateLimit(60);
         // Initialize Engine and its sub systems
         pez::core::createSystems();
 

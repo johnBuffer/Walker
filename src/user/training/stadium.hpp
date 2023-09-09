@@ -34,7 +34,6 @@ struct Stadium : public pez::core::IProcessor
     /// Initializes the iteration
     void initializeIteration()
     {
-        m_time = 0.0f;
         pez::core::parallelForeach<Walk>([&](Walk& walk) {
             walk.initialize();
         });
@@ -63,7 +62,4 @@ struct Stadium : public pez::core::IProcessor
             }
         });
     }
-
-private:
-    float m_time = 0.0f;
 };
