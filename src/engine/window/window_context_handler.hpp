@@ -28,9 +28,7 @@ public:
         registerDefaultCallbacks(true);
     }
 
-    ~WindowContextHandler()
-    {
-    }
+    ~WindowContextHandler() = default;
 
     void registerDefaultCallbacks(bool use_viewport_callbacks)
     {

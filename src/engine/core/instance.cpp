@@ -6,18 +6,16 @@ namespace pez::core
 EngineInstance::EngineInstance()
 {
     m_render_context = new pez::render::Context();
-    m_entity_manager = new EntityManager();
 }
 
 void EngineInstance::quit()
 {
     delete m_render_context;
     // Remove all entities
-    m_entity_manager->clearEntities();
+    m_entity_manager.clearEntities();
     // Stop all systems before removing
-    m_entity_manager->stopSystems();
-    m_entity_manager->clearSystems();
-    delete m_entity_manager;
+    m_entity_manager.stopSystems();
+    m_entity_manager.clearSystems();
 }
 
 void EngineInstance::render()
@@ -29,9 +27,9 @@ void EngineInstance::update(float dt)
 {
     if (pause) { return; }
     // Update all entities
-    m_entity_manager->updateEntities(dt);
+    m_entity_manager.updateEntities(dt);
     // Remove entities that requested removal
-    m_entity_manager->removeEntities();
+    m_entity_manager.removeEntities();
     // Time update
     time += dt;
     tick++;

@@ -9,7 +9,7 @@ namespace pez::core
 
 struct EngineInstance
 {
-    EntityManager*        m_entity_manager = nullptr;
+    EntityManager         m_entity_manager;
     pez::render::Context* m_render_context = nullptr;
 
     // Time related attributes

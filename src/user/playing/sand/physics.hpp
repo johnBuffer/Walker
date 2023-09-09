@@ -5,7 +5,6 @@
 #include "physic_object.hpp"
 #include "engine/common/utils.hpp"
 #include "engine/common/index_vector.hpp"
-#include "user/common/thread_pool/thread_pool.hpp"
 
 
 struct PhysicSolver : public pez::core::IProcessor

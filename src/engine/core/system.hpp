@@ -110,32 +110,5 @@ struct Renderer
     }
 };
 
-template<typename T, typename TCallback>
-void foreach(TCallback&& callback) {
-    static_assert(std::is_convertible<T*, Entity*>::value, "Can only iterate on Entity derived objects");
-    std::vector<T>& data = core::EntityContainer<T>::data.getData();
-    const uint64_t count = core::EntityContainer<T>::data.size();
-    for (uint64_t i{0}; i<count; ++i) {
-        if (!data[i].isRemoved()) {
-            callback(data[i]);
-        }
-    }
-}
-
-template<typename T, typename TCallback>
-void foreachAbort(TCallback&& callback) {
-    static_assert(std::is_convertible<T*, Entity*>::value, "Can only iterate on Entity derived objects");
-    std::vector<T>& data = core::EntityContainer<T>::data.getData();
-    const uint64_t count = core::EntityContainer<T>::data.size();
-    for (uint64_t i{0}; i<count; ++i) {
-        if (!data[i].isRemoved()) {
-            if (callback(data[i])) {
-                return;
-            }
-        }
-    }
-}
-
-
 }
 

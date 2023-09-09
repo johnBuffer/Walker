@@ -10,7 +10,7 @@ struct Stadium : public pez::core::IProcessor
 {
     TrainingState&  state;
     tp::ThreadPool& thread_pool;
-    Evolver<conf::input_count, conf::output_count> evolver;
+    Evolver         evolver;
 
     Stadium()
         : state{pez::core::getSingleton<TrainingState>()}
@@ -31,11 +31,21 @@ struct Stadium : public pez::core::IProcessor
         evolver.createNewGeneration();
     }
 
+    /// Initializes the iteration
+    void initializeIteration()
+    {
+        m_time = 0.0f;
+        pez::core::parallelForeach<Walk>([&](Walk& walk) {
+            walk.initialize();
+        });
+    }
+
     void executeTasks(float dt)
     {
-        /*uint32_t const tasks_count = pez::core::getCount<Walk>();
+        initializeIteration();
+
+        uint32_t const tasks_count = pez::core::getCount<Walk>();
         auto&          tasks       = pez::core::getData<Walk>().getData();
-        //initializeIteration();
         thread_pool.dispatch(tasks_count, [&](uint32_t start, uint32_t end) {
             float t = 0.0f;
             while (t < conf::max_iteration_time) {
@@ -51,6 +61,9 @@ struct Stadium : public pez::core::IProcessor
                 }
                 t += dt;
             }
-        });*/
+        });
     }
+
+private:
+    float m_time = 0.0f;
 };

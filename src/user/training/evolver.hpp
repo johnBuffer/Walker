@@ -7,16 +7,14 @@
 #include "user/training/genome.hpp"
 
 
-template<int TInputs, int TOutputs>
 struct Evolver
 {
-    using CompatGenome = nt::Genome<TInputs, TOutputs>;
-    using GenomeVector = std::vector<CompatGenome>;
+    using GenomeVector = std::vector<Genome>;
 
     TrainingState& state;
 
     Selector selector;
-    nt::Mutator<TInputs, TOutputs> mutator;
+    nt::Mutator<conf::input_count, conf::output_count> mutator;
 
     GenomeVector old_generation;
     GenomeVector new_generation;
@@ -85,7 +83,7 @@ struct Evolver
     {
         uint32_t i{0};
         pez::core::foreach<Genome>([&](Genome& genome) {
-            genome.genome = new_generation[i];
+            genome.genome = new_generation[i].genome;
             ++i;
         });
     }
