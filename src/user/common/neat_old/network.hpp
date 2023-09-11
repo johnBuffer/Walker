@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <list>
+#include <array>
 #include "network_info.hpp"
 
 

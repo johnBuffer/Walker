@@ -31,7 +31,7 @@ struct Renderer
 
     sf::VertexArray shadow_va;
 
-    std::vector<CreatureCard> cards;
+    std::vector<WalkerCard> cards;
     Card background;
     Card network_back;
     Card network_out;
@@ -83,7 +83,7 @@ struct Renderer
         for (auto const& t : simulation.tasks) {
             cards.emplace_back(t.color, simulation.creatures[t.creature_idx]);
             cards.back().rank = i;
-            cards.back().setPosition({card_margin, card_margin + i * (CreatureCard::height + card_margin)});
+            cards.back().setPosition({card_margin, card_margin + i * (WalkerCard::height + card_margin)});
             cards.back().text.setString(t.name);
             ++i;
         }
@@ -161,7 +161,7 @@ struct Renderer
 
         //context.drawDirect(hud_va);
 
-        std::vector<CreatureCard*> sorted_cards;
+        std::vector<WalkerCard*> sorted_cards;
         for (auto& c : cards) { sorted_cards.push_back(&c); }
         std::sort(sorted_cards.begin(), sorted_cards.end(), [](auto const* t1, auto const* t2) {return t1->progression > t2->progression;});
 
@@ -178,7 +178,7 @@ struct Renderer
             uint32_t i{0};
             for (auto* c : sorted_cards) {
                 if (i != c->rank && c->position.isDone()) {
-                    c->setPosition({card_margin, card_margin + i * (CreatureCard::height + card_margin)});
+                    c->setPosition({card_margin, card_margin + i * (WalkerCard::height + card_margin)});
                     c->rank = i;
                 }
                 ++i;

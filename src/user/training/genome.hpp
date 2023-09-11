@@ -20,7 +20,7 @@ struct Genome : public pez::core::Entity
     {}
 
     void onRemove() override
-    {
+    {}
 
-    }
+
 };

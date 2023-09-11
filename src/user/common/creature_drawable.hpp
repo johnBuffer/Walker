@@ -2,7 +2,7 @@
 #include "engine/common/color_utils.hpp"
 
 #include "user/playing/render/target.hpp"
-#include "./creature.hpp"
+#include "./walker.hpp"
 
 
 struct CreatureDrawable
@@ -60,7 +60,7 @@ struct CreatureDrawable
         base_color_vec = Vec3(color.r, color.g, color.b);
     }
 
-    void initialize(Creature const& creature)
+    void initialize(Walker const& creature)
     {
         link_va.resize(creature.getLinkCount() * 4);
         pods_cooldown.resize(creature.getPodCount());
@@ -78,7 +78,7 @@ struct CreatureDrawable
         eye_right_position.setValueInstant(creature.getHeadPosition());
     }
 
-    void update(Creature const& creature, float dt)
+    void update(Walker const& creature, float dt)
     {
         for (auto& c : pods_cooldown) {
             c -= dt;
@@ -93,7 +93,7 @@ struct CreatureDrawable
         render_target.render(context);
     }
 
-    void render(Creature const& creature, Vec2 target, pez::render::Context& context)
+    void render(Walker const& creature, Vec2 target, pez::render::Context& context)
     {
         // Bezier
         sf::Color const body_color = ColorUtils::createColor(base_color_vec); //{140, 106, 70};

@@ -2,7 +2,7 @@
 #include <array>
 
 #include "user/training/old/stadium/task.hpp"
-#include "user/common/creature.hpp"
+#include "user/common/walker.hpp"
 #include "user/common/configuration.hpp"
 
 

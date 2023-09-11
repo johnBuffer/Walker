@@ -6,7 +6,7 @@
 #include "engine/common/racc.hpp"
 
 
-struct CreatureCard
+struct WalkerCard
 {
     static float constexpr corner_radius = 20.0f;
     static float constexpr width         = 500.0f;
@@ -41,13 +41,13 @@ struct CreatureCard
     sf::Text text_label_speed;
 
     explicit
-    CreatureCard(sf::Color color, Creature const& creature)
-            : background{{width, height}, corner_radius, color}
-            , progress_back{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
-            , progress_bar{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
-            , outline_base{{width_out, height_out}, corner_radius + outline, color}
-            , outline_alpha{{width_out, height_out}, corner_radius + outline, {0, 0, 0, dark_alpha_light}}
-            , speed{100}
+    WalkerCard(sf::Color color, Walker const& creature)
+        : background{{width, height}, corner_radius, color}
+        , progress_back{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
+        , progress_bar{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
+        , outline_base{{width_out, height_out}, corner_radius + outline, color}
+        , outline_alpha{{width_out, height_out}, corner_radius + outline, {0, 0, 0, dark_alpha_light}}
+        , speed{100}
     {
         font.loadFromFile("res/font.ttf");
         text.setFont(font);

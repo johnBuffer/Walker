@@ -16,7 +16,7 @@ struct Simulation : public pez::core::IProcessor
 {
     PhysicSolver& solver;
 
-    std::vector<Creature> creatures;
+    std::vector<Walker>   creatures;
     std::vector<WalkTask> tasks;
     std::vector<Vec2>     targets;
     std::vector<uint64_t> target_remaining;

@@ -75,7 +75,7 @@ struct Pod
     }
 };
 
-struct Creature
+struct Walker
 {
     VerletSystem system;
 
@@ -89,10 +89,10 @@ struct Creature
     Vec2 last_contraction = {};
     static float constexpr contraction_coef = 0.125f;
 
-    Creature() = default;
+    Walker() = default;
 
     explicit
-    Creature(Vec2 position)
+    Walker(Vec2 position)
     {
         float const base = 50.0f;
         addPod({position.x - base, position.y - base}); // 0

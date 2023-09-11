@@ -4,7 +4,7 @@
 
 #include "engine/common/math.hpp"
 
-#include "user/common/creature.hpp"
+#include "user/common/walker.hpp"
 #include "user/common/configuration.hpp"
 #include "user/common/neat_old/genome.hpp"
 
@@ -26,7 +26,7 @@ struct WalkTask
         : color{color_}
     {}
 
-    bool update(float dt, Creature& creature, Vec2 target)
+    bool update(float dt, Walker& creature, Vec2 target)
     {
         // Update AI
         updateAI(creature, target);
@@ -44,7 +44,7 @@ struct WalkTask
         return false;
     }
 
-    void updateAI(Creature& creature, Vec2 target)
+    void updateAI(Walker& creature, Vec2 target)
     {
         const Vec2  to_target       = target - creature.getHeadPosition();
         float const dist_to_target              = MathVec2::length(to_target);

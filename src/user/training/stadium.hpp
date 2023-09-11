@@ -34,7 +34,7 @@ struct Stadium : public pez::core::IProcessor
     /// Initializes the iteration
     void initializeIteration()
     {
-        pez::core::parallelForeach<Walk>([&](Walk& walk) {
+        pez::core::parallelForeach<training::Walk>([&](training::Walk& walk) {
             walk.initialize();
         });
     }
@@ -43,8 +43,8 @@ struct Stadium : public pez::core::IProcessor
     {
         initializeIteration();
 
-        uint32_t const tasks_count = pez::core::getCount<Walk>();
-        auto&          tasks       = pez::core::getData<Walk>().getData();
+        uint32_t const tasks_count = pez::core::getCount<training::Walk>();
+        auto&          tasks       = pez::core::getData<training::Walk>().getData();
         thread_pool.dispatch(tasks_count, [&](uint32_t start, uint32_t end) {
             float t = 0.0f;
             while (t < conf::max_iteration_time) {
