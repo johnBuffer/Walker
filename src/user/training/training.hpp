@@ -15,6 +15,9 @@ struct Training
         pez::render::WindowContextHandler app("Walk - Training", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
         training::registerSystems();
 
+        pez::render::setFocus(conf::world_size * 0.5f);
+        pez::render::setZoom(0.8f);
+
         constexpr uint32_t fps_cap = 60;
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);

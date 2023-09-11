@@ -65,10 +65,6 @@ struct Renderer : public pez::core::IRenderer
     void render(pez::render::Context& context) override
     {
         background.render(context);
-
-        sf::RectangleShape test({100.0f, 100.0f});
-        test.setFillColor(sf::Color::Red);
-        context.draw(test);
     }
 
     void setNetwork(uint32_t i)
