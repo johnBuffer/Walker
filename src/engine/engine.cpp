@@ -13,10 +13,10 @@ void pez::core::quit()
     GlobalInstance::instance->quit();
 }
 
-void pez::core::render()
+void pez::core::render(sf::Color clear_color)
 {
     pez::render::Context& context = *(GlobalInstance::instance->m_render_context);
-    context.clear();
+    context.clear(clear_color);
     GlobalInstance::instance->m_entity_manager.render(context);
     context.display();
 }

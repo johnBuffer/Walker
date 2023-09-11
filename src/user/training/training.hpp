@@ -20,7 +20,7 @@ struct Training
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
             pez::core::update(dt);
-            pez::core::render();
+            pez::core::render({80, 80, 80});
         }
 
         return 0;

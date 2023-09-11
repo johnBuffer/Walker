@@ -14,7 +14,7 @@ namespace pez::core
 void     createSystems();
 void     quit();
 void     update(float dt);
-void     render();
+void     render(sf::Color clear_color = sf::Color::Black);
 uint64_t getTick();
 float    getTime();
 void     setPause(bool pause);

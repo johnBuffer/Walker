@@ -9,6 +9,8 @@
 #include "user/training/walk.hpp"
 #include "user/training/demo.hpp"
 
+#include "user/training/render/renderer.hpp"
+
 
 namespace training
 {
@@ -19,6 +21,8 @@ void registerSystems()
 
     pez::core::registerProcessor<Stadium>();
     pez::core::registerProcessor<Demo>();
+
+    pez::core::registerRenderer<Renderer>();
 
     pez::core::registerDataEntity<Genome>();
     pez::core::registerDataEntity<Walk>();
