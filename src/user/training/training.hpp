@@ -18,6 +18,10 @@ struct Training
         pez::render::setFocus(conf::world_size * 0.5f);
         pez::render::setZoom(0.8f);
 
+        app.getEventManager().addKeyPressedCallback(sf::Keyboard::S, [&](sfev::CstEv) {
+            app.toggleUnlimitedFramerate();
+        });
+
         constexpr uint32_t fps_cap = 60;
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);

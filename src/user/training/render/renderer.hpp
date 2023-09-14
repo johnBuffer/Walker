@@ -43,23 +43,25 @@ struct Renderer : public pez::core::IRenderer
         , network_back({}, 0.0f, sf::Color{50, 50, 50})
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
         , creature_drawables(sf::Color::White)
-        , walker{sf::Color::Green}
+        , walker{{121, 123, 255}}
     {
         font.loadFromFile("res/font.ttf");
         text.setFont(font);
-        text.setCharacterSize(200);
-        text.setFillColor(sf::Color::Black);
+        text.setCharacterSize(40);
+        text.setFillColor(sf::Color::White);
 
-        /*for (auto const& t : simulation.tasks) {
-            Vec2 const padding{network_padding, network_padding};
-            Vec2 const out = padding + Vec2{network_outline, network_outline};
-            network_renderer.initialize(t.genome->network);
-            network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
-            network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
-            network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
-            network_back.position = network_renderer.position - padding;
-            network_out.position = network_renderer.position - out;
-        }*/
+        auto const& demo = pez::core::getProcessor<Demo>();
+
+        walker.initialize(demo.task.walker);
+
+        Vec2 const padding{network_padding, network_padding};
+        Vec2 const out = padding + Vec2{network_outline, network_outline};
+        network_renderer.initialize(demo.task.network);
+        network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
+        network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
+        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
+        network_back.position = network_renderer.position - padding;
+        network_out.position  = network_renderer.position - out;
 
         Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
@@ -71,23 +73,26 @@ struct Renderer : public pez::core::IRenderer
     {
         background.render(context);
 
-        float const dt = 0.016f;
         auto const& demo = pez::core::getProcessor<Demo>();
+
+        float const r{10.0f};
+        sf::CircleShape target(r);
+        target.setOrigin(r, r);
+        target.setPosition(demo.task.getCurrentTarget());
+        context.draw(target);
+
+        float const dt = 0.016f;
         walker.update(demo.task.walker, dt);
         walker.render(demo.task.walker, demo.task.getCurrentTarget(), context);
-    }
 
-    void setNetwork(uint32_t i)
-    {
-        /*auto const& t = simulation.tasks[i];
-        Vec2 const padding{network_padding, network_padding};
-        Vec2 const out = padding + Vec2{network_outline, network_outline};
-        network_renderer.initialize(t.genome->network);
-        network_renderer.position = Vec2{2560.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
-        network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
-        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
-        network_back.position = network_renderer.position - padding;
-        network_out.position = network_renderer.position - out;*/
+        network_out.renderHud(context);
+        network_back.renderHud(context);
+        network_renderer.update();
+        network_renderer.render(context);
+
+        text.setPosition(card_margin, card_margin);
+        text.setString(toString(demo.time));
+        context.drawDirect(text);
     }
 };
 

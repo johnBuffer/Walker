@@ -38,6 +38,22 @@ public:
         m_render_context->registerCallbacks(m_event_manager, use_viewport_callbacks);
     }
 
+    void unlockFramerate()
+    {
+        m_window.setFramerateLimit(0);
+    }
+
+    void lockFramerate(uint32_t framerate)
+    {
+        m_window.setFramerateLimit(framerate);
+    }
+
+    void toggleUnlimitedFramerate()
+    {
+        m_is_framerate_locked = !m_is_framerate_locked;
+        m_window.setFramerateLimit(m_is_framerate_locked ? 60 : 0);
+    }
+
     void exit()
     {
         m_running = false;
@@ -71,13 +87,11 @@ public:
         return *m_render_context;
     }
 
-    uint64_t target_frame_time = 16;
-
 private:
     sf::RenderWindow   m_window;
     Context*           m_render_context = nullptr;
     bool               m_running        = true;
     sfev::EventManager m_event_manager;
-    uint64_t           m_last_time      = 0;
+    bool               m_is_framerate_locked = true;
 };
 }

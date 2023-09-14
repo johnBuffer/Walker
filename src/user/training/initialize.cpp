@@ -22,11 +22,11 @@ void registerSystems()
     pez::core::registerProcessor<Stadium>();
     pez::core::registerProcessor<Demo>();
 
-    pez::core::registerRenderer<Renderer>();
-
     pez::core::registerDataEntity<Genome>();
     pez::core::registerDataEntity<Walk>();
     pez::core::registerDataEntity<TargetSequence>();
+
+    pez::core::registerRenderer<Renderer>();
 }
 
 }
