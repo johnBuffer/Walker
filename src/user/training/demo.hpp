@@ -18,6 +18,7 @@ struct Demo : public pez::core::IProcessor
 
     Demo()
         : state{pez::core::getSingleton<TrainingState>()}
+        , task{0, 0}
     {
         initialize();
     }

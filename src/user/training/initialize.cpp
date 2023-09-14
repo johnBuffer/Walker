@@ -26,6 +26,7 @@ void registerSystems()
 
     pez::core::registerDataEntity<Genome>();
     pez::core::registerDataEntity<Walk>();
+    pez::core::registerDataEntity<TargetSequence>();
 }
 
 }

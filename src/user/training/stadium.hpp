@@ -15,7 +15,21 @@ struct Stadium : public pez::core::IProcessor
     Stadium()
         : state{pez::core::getSingleton<TrainingState>()}
         , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
-    {}
+    {
+        // Create target sequences for training and demo
+        pez::core::create<TargetSequence>();
+        pez::core::create<TargetSequence>();
+
+        // Create genomes
+        for (uint32_t i{0}; i < conf::population_size; ++i) {
+            pez::core::create<Genome>();
+        }
+
+        // Create tasks
+        for (uint32_t i{0}; i < conf::population_size; ++i) {
+            pez::core::create<training::Walk>(i, 1);
+        }
+    }
 
     void update(float dt) override
     {
@@ -32,8 +46,9 @@ struct Stadium : public pez::core::IProcessor
     }
 
     /// Initializes the iteration
-    void initializeIteration()
+    void initializeIteration() const
     {
+        pez::core::get<TargetSequence>(1).generateNewTargets();
         pez::core::parallelForeach<training::Walk>([&](training::Walk& walk) {
             walk.initialize();
         });
