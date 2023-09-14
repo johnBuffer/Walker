@@ -7,6 +7,8 @@
 #include "user/common/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
+#include "user/training/demo.hpp"
+
 
 namespace training
 {
@@ -32,6 +34,8 @@ struct Renderer : public pez::core::IRenderer
     float const network_padding = 20.0f;
     float const network_outline = 10.0f;
 
+    CreatureDrawable walker;
+
     explicit
     Renderer()
         : shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
@@ -39,6 +43,7 @@ struct Renderer : public pez::core::IRenderer
         , network_back({}, 0.0f, sf::Color{50, 50, 50})
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
         , creature_drawables(sf::Color::White)
+        , walker{sf::Color::Green}
     {
         font.loadFromFile("res/font.ttf");
         text.setFont(font);
@@ -65,6 +70,11 @@ struct Renderer : public pez::core::IRenderer
     void render(pez::render::Context& context) override
     {
         background.render(context);
+
+        float const dt = 0.016f;
+        auto const& demo = pez::core::getProcessor<Demo>();
+        walker.update(demo.task.walker, dt);
+        walker.render(demo.task.walker, demo.task.getCurrentTarget(), context);
     }
 
     void setNetwork(uint32_t i)

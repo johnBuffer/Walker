@@ -1,6 +1,7 @@
 #pragma once
 #include "engine/engine.hpp"
 #include "user/training/training_state.hpp"
+#include "user/training/walk.hpp"
 
 
 namespace training
@@ -10,8 +11,7 @@ struct Demo : public pez::core::IProcessor
 {
     TrainingState&  state;
 
-    std::vector<Vec2> targets;
-    Walk              task;
+    Walk task;
 
     float time = 0.0f;
 
