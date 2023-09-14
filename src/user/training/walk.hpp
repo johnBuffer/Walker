@@ -42,12 +42,15 @@ struct Walk : public training::Task
 
     void update(float dt) override
     {
+        std::cout << "Update task " << target_sequence_id << std::endl;
+
         // Get the current target to reach
         Vec2 const target = pez::core::get<TargetSequence>(target_sequence_id).getTarget(current_target);
 
         // Update AI
         updateAI(walker, target);
 
+        /*
         // Update physic
         walker.update(dt);
 
@@ -57,6 +60,7 @@ struct Walk : public training::Task
         if (dist_to_target < conf::target_radius) {
             ++current_target;
         }
+         */
     }
 
     void updateAI(Walker& creature, Vec2 target)

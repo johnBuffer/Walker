@@ -13,12 +13,11 @@ struct Demo : public pez::core::IProcessor
     std::vector<Vec2> targets;
     Walk              task;
 
-
     float time = 0.0f;
 
     Demo()
         : state{pez::core::getSingleton<TrainingState>()}
-        , task{0, 0}
+        , task{pez::core::EntityID{}, 0, 0}
     {
         initialize();
     }
