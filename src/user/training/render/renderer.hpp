@@ -100,7 +100,7 @@ struct Renderer : public pez::core::IRenderer
         network_renderer.initialize(demo.task.network);
         network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
         network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
-        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
+        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, walker.base_color};
         network_back.position = network_renderer.position - padding;
         network_out.position  = network_renderer.position - out;
     }

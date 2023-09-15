@@ -10,7 +10,7 @@ struct Muscle
     float    extension_ratio   = 0.0f;
     float    current_ratio = 0.0f;
     float    target_ratio = 0.0f;
-    float    speed = 4.0f;
+    float    speed = 8.0f;
 
     Muscle() = default;
     Muscle(uint64_t idx, float size, float contraction, float extension)
@@ -52,7 +52,7 @@ struct Muscle
 struct Pod
 {
     uint64_t object_idx = 0;
-    float speed = 8.0f;
+    float speed = 10.0f;
     float current_friction = 0.0f;
     float target_friction = 0.0f;
 
@@ -171,7 +171,7 @@ struct Walker
         muscle.strength  = muscle_strength;
     }
 
-    void addJoint(Vec2 position, float mass = 10.0f)
+    void addJoint(Vec2 position, float mass = 1.0f)
     {
         auto& joint = system.objects.emplace_back(position);
         joint.setMass(mass);
@@ -180,7 +180,7 @@ struct Walker
     void addPod(Vec2 position)
     {
         pods.emplace_back(system.objects.size());
-        addJoint(position, 1.0f);
+        addJoint(position, 10.0f);
     }
 
     VerletLink& getMuscle(uint64_t idx)
