@@ -99,18 +99,19 @@ struct CreatureDrawable
         sf::Color const body_color = ColorUtils::createColor(base_color_vec); //{140, 106, 70};
         auto const mid_joint = creature.getJoint(4).position;
         // Muscles
-        float const muscle_contraction_size = 30.0f;
+        float const muscle_contraction_size = 10.0f;
 
+        float const offset_muscle = 10.0f;
         {
             float const contraction = creature.getMuscleRatio(0);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -20.0f + (1.0f - (contraction - 0.5f)) * muscle_contraction_size);
+            Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -offset_muscle + (2.0f - contraction) * muscle_contraction_size);
         }
 
         {
             float const contraction = creature.getMuscleRatio(1);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -20.0f + (1.0f - (contraction - 0.5f)) * muscle_contraction_size);
+            Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -offset_muscle + (2.0f - contraction) * muscle_contraction_size);
         }
 
         // Rest

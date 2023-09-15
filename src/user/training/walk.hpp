@@ -25,6 +25,8 @@ struct Walk : public training::Task
 
     uint32_t current_target = 0;
 
+    float time = 0.0f;
+
     explicit
     Walk(pez::core::EntityID id_, pez::core::ID genome_id_, pez::core::ID target_sequence_id_)
         : Task{id_}
@@ -37,8 +39,10 @@ struct Walk : public training::Task
         walker = Walker{conf::world_size * 0.5f};
         current_target = 0;
 
+        auto& genome = getGenome();
         // Update the network
-        network = pez::core::get<Genome>(genome_id).genome.generateNetwork();
+        network = genome.generateNetwork();
+        genome.score = 0.0f;
     }
 
     [[nodiscard]]
@@ -49,8 +53,14 @@ struct Walk : public training::Task
 
     void update(float dt) override
     {
+        auto& genome = getGenome();
         // Get the current target to reach
         Vec2 const target = getCurrentTarget();
+
+        /*walker.setMuscleRatio(0, sin(time));
+        walker.update(dt);
+        time += dt;
+        return;*/
 
         // Update AI
         updateAI(walker, target);
@@ -63,7 +73,11 @@ struct Walk : public training::Task
         float const dist_to_target  = MathVec2::length(to_target);
         if (dist_to_target < conf::target_radius) {
             ++current_target;
+            genome.score += conf::target_reward;
         }
+
+        // Update score
+        getGenome().score += 1.0f / (1.0f + dist_to_target) * dt;
     }
 
     void updateAI(Walker& creature, Vec2 target)
@@ -97,6 +111,11 @@ struct Walk : public training::Task
     bool done() const override
     {
         return false;
+    }
+
+    Genome& getGenome()
+    {
+        return pez::core::get<Genome>(genome_id);
     }
 };
 }

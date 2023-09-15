@@ -16,7 +16,7 @@ struct Stadium : public pez::core::IProcessor
         : state{pez::core::getSingleton<TrainingState>()}
         , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
     {
-        // Create target sequences for training and demo
+        // Create target sequences for demo and training
         pez::core::create<TargetSequence>();
         pez::core::create<TargetSequence>();
 
@@ -27,6 +27,7 @@ struct Stadium : public pez::core::IProcessor
 
         // Create tasks
         for (uint32_t i{0}; i < conf::population_size; ++i) {
+            // The 1 is to use training target sequence (as opposed to the constant one for demo, 0)
             pez::core::create<training::Walk>(i, 1);
         }
     }

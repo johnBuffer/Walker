@@ -14,18 +14,20 @@ struct Demo : public pez::core::IProcessor
     Walk task;
 
     float time = 0.0f;
+    bool need_init = true;
 
     Demo()
         : state{pez::core::getSingleton<TrainingState>()}
-        , task{pez::core::EntityID{}, 0, 0}
+        , task{{}, 0, 1}
     {
-        initialize();
+        task.initialize();
     }
 
     void initialize()
     {
         time = 0.0f;
         task.initialize();
+        need_init = false;
     }
 
     void update(float dt) override
@@ -34,15 +36,18 @@ struct Demo : public pez::core::IProcessor
             return;
         }
 
-        time += dt;
+        if (need_init) {
+            initialize();
+        }
 
+        time += dt;
         task.update(dt);
 
-        // When demo is over, prepare the next one
+        // Switch back to training when demo is over
         if (time >= conf::max_iteration_time) {
-            initialize();
-            // Switch back to training
             state.demo = false;
+            need_init  = true;
+            std::cout << "Demo score: " << task.getGenome().score << std::endl;
         }
     }
 };

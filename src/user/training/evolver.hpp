@@ -41,7 +41,7 @@ struct Evolver
             return g1.score > g2.score;
         });
 
-        std::cout << "Iteration best: " << old_generation[0].score << std::endl;
+        std::cout << "[" << state.iteration << "] Iteration best: " << old_generation[0].score << std::endl;
 
         // Keep elite
         const auto elite_count = to<uint32_t>(conf::elite_ratio * to<float>(conf::population_size));
@@ -68,6 +68,8 @@ struct Evolver
             // Mutate weights
             nn::Utils::mutate(new_genome.genome);
         }
+
+        updatePopulation();
     }
 
     void fetchOldPopulation()
@@ -83,7 +85,7 @@ struct Evolver
     {
         uint32_t i{0};
         pez::core::foreach<Genome>([&](Genome& genome) {
-            genome.genome = new_generation[i].genome;
+            genome = new_generation[i];
             ++i;
         });
     }

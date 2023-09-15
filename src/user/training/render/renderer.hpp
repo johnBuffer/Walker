@@ -36,6 +36,8 @@ struct Renderer : public pez::core::IRenderer
 
     CreatureDrawable walker;
 
+    TrainingState& state;
+
     explicit
     Renderer()
         : shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
@@ -44,6 +46,7 @@ struct Renderer : public pez::core::IRenderer
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
         , creature_drawables(sf::Color::White)
         , walker{{121, 123, 255}}
+        , state{pez::core::getSingleton<TrainingState>()}
     {
         font.loadFromFile("res/font.ttf");
         text.setFont(font);
@@ -73,6 +76,10 @@ struct Renderer : public pez::core::IRenderer
     {
         background.render(context);
 
+        if (!state.demo) {
+            return;
+        }
+
         auto const& demo = pez::core::getProcessor<Demo>();
 
         float const r{10.0f};
@@ -87,8 +94,8 @@ struct Renderer : public pez::core::IRenderer
 
         network_out.renderHud(context);
         network_back.renderHud(context);
-        network_renderer.update();
-        network_renderer.render(context);
+        //network_renderer.update();
+        //network_renderer.render(context);
 
         text.setPosition(card_margin, card_margin);
         text.setString(toString(demo.time));

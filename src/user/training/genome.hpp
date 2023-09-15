@@ -22,5 +22,9 @@ struct Genome : public pez::core::Entity
     void onRemove() override
     {}
 
-
+    [[nodiscard]]
+    nt::Network<conf::input_count, conf::output_count> generateNetwork() const
+    {
+        return genome.generateNetwork();
+    }
 };
