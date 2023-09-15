@@ -23,12 +23,7 @@ struct Demo : public pez::core::IProcessor
         task.initialize();
     }
 
-    void initialize()
-    {
-        time = 0.0f;
-        task.initialize();
-        need_init = false;
-    }
+    void initialize();
 
     void update(float dt) override
     {

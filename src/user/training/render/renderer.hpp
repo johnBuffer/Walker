@@ -54,17 +54,7 @@ struct Renderer : public pez::core::IRenderer
         text.setFillColor(sf::Color::White);
 
         auto const& demo = pez::core::getProcessor<Demo>();
-
         walker.initialize(demo.task.walker);
-
-        Vec2 const padding{network_padding, network_padding};
-        Vec2 const out = padding + Vec2{network_outline, network_outline};
-        network_renderer.initialize(demo.task.network);
-        network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
-        network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
-        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
-        network_back.position = network_renderer.position - padding;
-        network_out.position  = network_renderer.position - out;
 
         Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
@@ -94,12 +84,25 @@ struct Renderer : public pez::core::IRenderer
 
         network_out.renderHud(context);
         network_back.renderHud(context);
-        //network_renderer.update();
-        //network_renderer.render(context);
+        network_renderer.update();
+        network_renderer.render(context);
 
         text.setPosition(card_margin, card_margin);
         text.setString(toString(demo.time));
         context.drawDirect(text);
+    }
+
+    void updateNetwork()
+    {
+        auto const& demo = pez::core::getProcessor<Demo>();
+        Vec2 const padding{network_padding, network_padding};
+        Vec2 const out = padding + Vec2{network_outline, network_outline};
+        network_renderer.initialize(demo.task.network);
+        network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
+        network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
+        network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, sf::Color::White};
+        network_back.position = network_renderer.position - padding;
+        network_out.position  = network_renderer.position - out;
     }
 };
 

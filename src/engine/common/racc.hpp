@@ -13,11 +13,10 @@ struct RAccBase
     explicit
     RAccBase(uint32_t max_size=8)
         : max_values_count(max_size)
-        , values(max_size, 0.0f)
+        , values(max_size)
         , current_index(0)
-        , pop_value(0.0f)
-    {
-    }
+        , pop_value{}
+    {}
 
     bool addValueBase(T val)
     {

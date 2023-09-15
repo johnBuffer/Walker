@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/engine.hpp"
+#include "engine/common/racc.hpp"
 
 #include "user/common/configuration.hpp"
 #include "user/common/walker.hpp"
@@ -9,11 +10,27 @@
 #include "user/training/genome.hpp"
 #include "user/training/target_sequence.hpp"
 
-
 namespace training
 {
 struct Walk : public training::Task
 {
+    /// Struct to store the state of the walker at a given point
+    struct State
+    {
+        float pod[4];
+        float muscle[2];
+
+        void setPodState(uint32_t i, float s)
+        {
+            pod[i] = s;
+        }
+
+        void setMuscleState(uint32_t i, float s)
+        {
+            muscle[i] = s;
+        }
+    };
+
     /// ===== Attributes =====
     /// The genome of this agent
     pez::core::ID genome_id          = pez::core::EntityID::INVALID_ID;
@@ -27,11 +44,14 @@ struct Walk : public training::Task
 
     float time = 0.0f;
 
+    RAccBase<State> state;
+
     explicit
     Walk(pez::core::EntityID id_, pez::core::ID genome_id_, pez::core::ID target_sequence_id_)
         : Task{id_}
         , genome_id{genome_id_}
         , target_sequence_id{target_sequence_id_}
+        , state{10}
     {}
 
     void initialize() override
@@ -62,6 +82,16 @@ struct Walk : public training::Task
         time += dt;
         return;*/
 
+        // Update state delay
+        State current_state;
+        for (uint32_t i{0}; i < 4; ++i) {
+            current_state.setPodState(i, walker.getPodFriction(i));
+        }
+        for (uint32_t i{0}; i < 2; ++i) {
+            current_state.setMuscleState(i, walker.getMuscleRatio(i));
+        }
+        state.addValueBase(current_state);
+
         // Update AI
         updateAI(walker, target);
 
@@ -82,6 +112,8 @@ struct Walk : public training::Task
 
     void updateAI(Walker& creature, Vec2 target)
     {
+        State const state_delay = state.get();
+
         const Vec2  to_target       = target - creature.getHeadPosition();
         float const dist_to_target  = MathVec2::length(to_target);
         const float to_target_dot   = MathVec2::dot(to_target / dist_to_target, creature.getHeadDirection());
@@ -90,12 +122,12 @@ struct Walk : public training::Task
             dist_to_target / conf::maximum_distance, // Distance to target
             to_target_dot,                           // Direction evaluation
             to_target_dot_n,                         // Direction normal evaluation
-            creature.getPodFriction(0),              // Pods state
-            creature.getPodFriction(1),
-            creature.getPodFriction(2),
-            creature.getPodFriction(3),
-            creature.getMuscleRatio(0),               // Muscles state
-            creature.getMuscleRatio(1),
+            state_delay.pod[0],              // Pods state
+            state_delay.pod[1],
+            state_delay.pod[2],
+            state_delay.pod[3],
+            state_delay.muscle[0],               // Muscles state
+            state_delay.muscle[1],
         });
 
         for (uint32_t i{0}; i<4; ++i) {
