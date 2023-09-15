@@ -105,13 +105,13 @@ struct CreatureDrawable
         {
             float const contraction = creature.getMuscleRatio(0);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -offset_muscle + (2.0f - contraction) * muscle_contraction_size);
+            Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
         }
 
         {
             float const contraction = creature.getMuscleRatio(1);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -offset_muscle + (2.0f - contraction) * muscle_contraction_size);
+            Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
         }
 
         // Rest
@@ -213,7 +213,7 @@ struct CreatureDrawable
 
     static sf::Color getMuscleColor(float contraction)
     {
-        auto const v{static_cast<uint8_t>(std::min(255.0f, std::max(0.0f, 150.0f * (1.0f * contraction))))};
+        auto const v{static_cast<uint8_t>(std::min(255.0f, std::min(255.0f, std::max(0.0f, 128.0f * (1.0f + contraction)))))};
         return {255, v, v};
     }
 };

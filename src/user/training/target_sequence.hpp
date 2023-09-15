@@ -28,6 +28,8 @@ struct TargetSequence : pez::core::Entity
         for (uint32_t i{targets_count}; i--;) {
             targets.push_back(generateOneTarget());
         }
+
+        targets[0].y = conf::maximum_distance * 0.25f;
     }
 
     /**

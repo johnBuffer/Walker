@@ -51,7 +51,7 @@ struct Walk : public training::Task
         : Task{id_}
         , genome_id{genome_id_}
         , target_sequence_id{target_sequence_id_}
-        , state{10}
+        , state{8}
     {}
 
     void initialize() override
@@ -77,7 +77,9 @@ struct Walk : public training::Task
         // Get the current target to reach
         Vec2 const target = getCurrentTarget();
 
-        /*walker.setMuscleRatio(0, sin(time));
+        /*walker.setMuscleRatio(0, sin(6.0f * time));
+        //walker.setMuscleRatio(0, 0.0f);
+        walker.setMuscleRatio(1, 0.0f);
         walker.update(dt);
         time += dt;
         return;*/
@@ -104,6 +106,7 @@ struct Walk : public training::Task
         if (dist_to_target < conf::target_radius) {
             ++current_target;
             genome.score += conf::target_reward;
+            walker.moveTo(conf::world_size * 0.5f);
         }
 
         // Update score

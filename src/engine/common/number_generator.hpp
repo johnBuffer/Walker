@@ -9,7 +9,7 @@ protected:
     std::mt19937 gen;
 
     NumberGenerator()
-            : gen(37)
+            : gen(0)
     {}
 
 public:
