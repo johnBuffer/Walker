@@ -26,7 +26,7 @@ struct VerletObject
     {
         const Vec2 frame_move = position - position_last;
         position_last = position;
-        position      = position + (1.0f - friction) * (frame_move + (acceleration - frame_move * 100.0f) * (dt * dt));
+        position      = position + (1.0f - friction) * (frame_move + (acceleration) * (dt * dt));
         acceleration  = {0.0f, 0.0f};
     }
 

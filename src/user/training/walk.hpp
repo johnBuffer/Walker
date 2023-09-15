@@ -51,7 +51,7 @@ struct Walk : public training::Task
         : Task{id_}
         , genome_id{genome_id_}
         , target_sequence_id{target_sequence_id_}
-        , state{8}
+        , state{2}
     {}
 
     void initialize() override

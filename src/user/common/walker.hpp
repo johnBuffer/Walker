@@ -10,7 +10,7 @@ struct Muscle
     float    extension_ratio   = 0.0f;
     float    current_ratio = 0.0f;
     float    target_ratio = 0.0f;
-    float    speed = 8.0f;
+    float    speed = 5.0f;
 
     Muscle() = default;
     Muscle(uint64_t idx, float size, float contraction, float extension)
@@ -52,7 +52,7 @@ struct Muscle
 struct Pod
 {
     uint64_t object_idx = 0;
-    float speed = 10.0f;
+    float speed = 8.0f;
     float current_friction = 0.0f;
     float target_friction = 0.0f;
 
