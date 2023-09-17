@@ -5,7 +5,7 @@
 #include "./walker.hpp"
 
 
-struct CreatureDrawable
+struct WalkerDrawable
 {
     static constexpr uint32_t bezier_pts = 32;
     /// Minimum amount of time to wait before adding a footprint
@@ -35,7 +35,7 @@ struct CreatureDrawable
     Target render_target;
 
     explicit
-    CreatureDrawable(sf::Color color)
+    WalkerDrawable(sf::Color color)
         : link_va(sf::PrimitiveType::Quads)
         , side_1_va(sf::PrimitiveType::TriangleFan, bezier_pts)
         , side_2_va(sf::PrimitiveType::TriangleFan, bezier_pts)
@@ -101,7 +101,7 @@ struct CreatureDrawable
         // Muscles
         float const muscle_contraction_size = 10.0f;
 
-        float const offset_muscle = 10.0f;
+        float const offset_muscle = 20.0f;
         {
             float const contraction = creature.getMuscleRatio(0);
             auto const color = getMuscleColor(contraction);

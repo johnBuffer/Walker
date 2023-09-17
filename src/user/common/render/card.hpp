@@ -24,7 +24,7 @@ struct Card
         , size{size_}
         , corner_radius{corner_radius_}
     {
-        updateCard();
+        updateGeometry();
         setColor(color);
     }
 
@@ -36,7 +36,7 @@ struct Card
         }
     }
 
-    void updateCard()
+    void updateGeometry()
     {
         const Conf conf;
 
@@ -107,6 +107,6 @@ struct Card
     void setWidth(float width)
     {
         size.x = width;
-        updateCard();
+        updateGeometry();
     }
 };

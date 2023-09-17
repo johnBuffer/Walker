@@ -3,7 +3,7 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/common/render/utils.hpp"
-#include "user/common/creature_drawable.hpp"
+#include "user/common/walker_drawable.hpp"
 #include "user/common/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
@@ -17,7 +17,7 @@ struct Renderer : public pez::core::IRenderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    CreatureDrawable creature_drawables;
+    WalkerDrawable creature_drawables;
 
     NetworkRenderer network_renderer;
 
@@ -34,14 +34,14 @@ struct Renderer : public pez::core::IRenderer
     float const network_padding = 20.0f;
     float const network_outline = 10.0f;
 
-    CreatureDrawable walker;
+    WalkerDrawable walker;
 
     TrainingState& state;
 
     explicit
     Renderer()
         : shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
-        , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
+        , background{conf::world_size, conf::maximum_distance, {200, 200, 200}}
         , network_back({}, 0.0f, sf::Color{50, 50, 50})
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
         , creature_drawables(sf::Color::White)
@@ -58,38 +58,22 @@ struct Renderer : public pez::core::IRenderer
 
         Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
-
-        background.position = {-25.0f, -25.0f};
     }
 
     void render(pez::render::Context& context) override
     {
         background.render(context);
 
-        if (!state.demo) {
-            return;
-        }
-
-        auto const& demo = pez::core::getProcessor<Demo>();
-
-        float const r{10.0f};
-        sf::CircleShape target(r);
+        float const r{2.0f};
+        sf::CircleShape target{r};
         target.setOrigin(r, r);
-        target.setPosition(demo.task.getCurrentTarget());
-        context.draw(target);
+        target.setFillColor(sf::Color::Red);
 
-        float const dt = 0.016f;
-        walker.update(demo.task.walker, dt);
-        walker.render(demo.task.walker, demo.task.getCurrentTarget(), context);
-
-        network_out.renderHud(context);
-        network_back.renderHud(context);
-        network_renderer.update();
-        network_renderer.render(context);
-
-        text.setPosition(card_margin, card_margin);
-        text.setString(toString(demo.time));
-        context.drawDirect(text);
+        auto& sequence = pez::core::get<TargetSequence>(1);
+        for (auto const& v : sequence.targets) {
+            target.setPosition(v);
+            context.draw(target);
+        }
     }
 
     void updateNetwork()

@@ -27,7 +27,7 @@ struct Training
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
             pez::core::update(dt);
-            pez::core::render({80, 80, 80});
+            pez::core::render(sf::Color::White);
         }
 
         return 0;

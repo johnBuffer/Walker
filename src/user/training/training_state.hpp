@@ -7,7 +7,7 @@ struct TrainingState
 {
     uint32_t iteration = 0;
 
-    bool demo = false;
+    bool demo = true;
 
     void addIteration()
     {

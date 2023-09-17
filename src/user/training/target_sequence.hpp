@@ -22,7 +22,7 @@ struct TargetSequence : pez::core::Entity
 
     void generateNewTargets()
     {
-        uint32_t const targets_count = 1000;
+        uint32_t const targets_count = 10000;
         targets.clear();
         targets.reserve(targets_count);
         for (uint32_t i{targets_count}; i--;) {
@@ -39,8 +39,8 @@ struct TargetSequence : pez::core::Entity
     static Vec2 generateOneTarget()
     {
         float const radius = 0.5f * conf::maximum_distance;
-        float const angle = RNGf::getUnder(Math::TwoPI);
-        float const dist  = sqrt(RNGf::getUnder(radius * radius));
+        float const angle  = RNGf::getUnder(Math::TwoPI);
+        float const dist   = RNGf::getUnder(radius);
         return Vec2{radius, radius} + dist * Vec2{cos(angle), sin(angle)};
     }
 };
