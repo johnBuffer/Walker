@@ -3,7 +3,6 @@
 
 #include "user/training/stadium.hpp"
 #include "user/training/genome.hpp"
-#include "user/training/agent.hpp"
 #include "user/training/target_sequence.hpp"
 #include "user/training/training_state.hpp"
 #include "user/training/walk.hpp"

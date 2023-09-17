@@ -22,11 +22,19 @@ struct Training
             app.toggleUnlimitedFramerate();
         });
 
+        RMean<float> update_time(100);
+
         constexpr uint32_t fps_cap = 60;
         // Main loop
         const float dt = 1.0f / static_cast<float>(fps_cap);
         while (app.run()) {
+
+            sf::Clock clock;
             pez::core::update(dt);
+            auto const ms = clock.getElapsedTime().asMilliseconds();
+            update_time.addValue(static_cast<float>(ms));
+            std::cout << "Update avg. time: " << update_time.get() << std::endl;
+
             pez::core::render({80, 80, 80});
         }
 
