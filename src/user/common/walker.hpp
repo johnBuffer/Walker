@@ -30,6 +30,16 @@ struct Muscle
     float getTargetSize() const
     {
         if (target_ratio > 0.0f) {
+            return rest_size * (1.0f + extension_ratio * target_ratio);
+        } else {
+            return rest_size * (1.0f + contraction_ratio * target_ratio);
+        }
+    }
+
+    [[nodiscard]]
+    float getCurrentSize() const
+    {
+        if (target_ratio > 0.0f) {
             return rest_size * (1.0f + extension_ratio * current_ratio);
         } else {
             return rest_size * (1.0f + contraction_ratio * current_ratio);
@@ -164,7 +174,7 @@ struct Walker
 
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
-        const float muscle_strength = 0.5f;
+        const float muscle_strength = 0.05f;
         muscles.emplace_back(system.links.size(), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;

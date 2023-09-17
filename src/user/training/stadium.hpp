@@ -16,7 +16,7 @@ struct Stadium : public pez::core::IProcessor
         : state{pez::core::getSingleton<TrainingState>()}
         , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
     {
-        RNGf::setSeed(1);
+        RNGf::setSeed(2);
 
         // Create target sequences for demo and training
         pez::core::create<TargetSequence>();
