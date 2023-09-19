@@ -62,7 +62,7 @@ struct Muscle
 struct Pod
 {
     uint64_t object_idx = 0;
-    float speed = 8.0f;
+    float speed = 30.0f;
     float current_friction = 0.0f;
     float target_friction = 0.0f;
 

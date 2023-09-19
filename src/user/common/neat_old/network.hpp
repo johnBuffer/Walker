@@ -18,7 +18,7 @@ struct Utils
 
     static float soft(float x)
     {
-        return 0.5f * (x / (1.0f + std::abs(x)) + 1.0f);
+        return x / (1.0f + std::abs(x));
     }
 };
 
@@ -72,7 +72,7 @@ struct Network
         float getValue() const
         {
             // If input, just send sum
-            return incoming_count ? tanh(4.0f * (sum + bias)) : sum;
+            return incoming_count ? Utils::soft(100.0f * (sum + bias)) : sum;
         }
     };
 
