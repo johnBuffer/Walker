@@ -33,7 +33,7 @@ struct Training
             pez::core::update(dt);
             auto const ms = clock.getElapsedTime().asMilliseconds();
             update_time.addValue(static_cast<float>(ms));
-            std::cout << "Update avg. time: " << update_time.get() << std::endl;
+            //std::cout << "Update avg. time: " << update_time.get() << std::endl;
 
             pez::core::render({80, 80, 80});
         }
