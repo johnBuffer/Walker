@@ -134,10 +134,10 @@ struct WalkerDrawable
         Utils::setVertexArrayColor(link_va, {0, 0, 0, dark_tone});
         context.draw(link_va);
 
-        context.draw(side_1_va);
+        /*context.draw(side_1_va);
         context.draw(side_2_va);
         context.draw(side_3_va);
-        context.draw(side_4_va);
+        context.draw(side_4_va);*/
 
         // Draw pods
         for (uint32_t i{0}; i < 4; ++i) {
@@ -167,6 +167,21 @@ struct WalkerDrawable
             context.draw(pod);
         }
 
+        /*{
+            float const contraction = creature.getMuscleRatio(0);
+            float const offset = -offset_muscle + (1.0f - contraction) * muscle_contraction_size;
+            auto const m1 = creature.getJoint(0).position - mid_joint;
+            auto const m2 = creature.getJoint(3).position - mid_joint;
+            auto const m3 = MathVec2::normalize(MathVec2::length(m1) * m2 + MathVec2::length(m2) * m1);
+            auto const mid = mid_joint + offset * m3;
+
+            float const r = 2.0f;
+            sf::CircleShape c(r);
+            c.setOrigin(r, r);
+            c.setPosition(mid);
+            context.draw(c);
+        }*/
+
         // Draw eyes
         float const eye_radius  = 12.0f;
         float const eye_spacing = 14.0f;
@@ -183,12 +198,12 @@ struct WalkerDrawable
         // Right
         eye_right_position = eye_center + head_direction + head_normal * eye_spacing;
         eye.setPosition(eye_right_position);
-        context.draw(eye);
+        //context.draw(eye);
 
         // Left
         eye_left_position = eye_center + head_direction - head_normal * eye_spacing;
         eye.setPosition(eye_left_position);
-        context.draw(eye);
+        //context.draw(eye);
 
         // Pupil
         float const pupil_radius    = 6.0f;
@@ -202,13 +217,13 @@ struct WalkerDrawable
         auto const sight_direction_right = MathVec2::normalize(target - eye_right_position.get());
         pupil_right_position = sight_direction_right * pupil_max_dist;
         pupil.setPosition(eye_right_position.get() + pupil_right_position.get());
-        context.draw(pupil);
+        //context.draw(pupil);
 
         // Left
         auto const sight_direction_left = MathVec2::normalize(target - eye_left_position.get());
         pupil_left_position = sight_direction_left * pupil_max_dist;
         pupil.setPosition(eye_left_position.get() + pupil_left_position.get());
-        context.draw(pupil);
+        //context.draw(pupil);
     }
 
     static sf::Color getMuscleColor(float contraction)

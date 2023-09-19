@@ -64,16 +64,10 @@ struct Renderer : public pez::core::IRenderer
     {
         background.render(context);
 
-        float const r{2.0f};
-        sf::CircleShape target{r};
-        target.setOrigin(r, r);
-        target.setFillColor(sf::Color::Red);
-
-        auto& sequence = pez::core::get<TargetSequence>(1);
-        for (auto const& v : sequence.targets) {
-            target.setPosition(v);
-            context.draw(target);
-        }
+        float const dt = 0.016f;
+        auto const& demo = pez::core::getProcessor<Demo>();
+        walker.update(demo.task.walker, dt);
+        walker.render(demo.task.walker, demo.task.getCurrentTarget(), context);
     }
 
     void updateNetwork()

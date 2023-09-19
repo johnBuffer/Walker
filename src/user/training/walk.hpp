@@ -77,12 +77,15 @@ struct Walk : public training::Task
         // Get the current target to reach
         Vec2 const target = getCurrentTarget();
 
-        /*walker.setMuscleRatio(0, sin(6.0f * time));
+        walker.setPodFriction(1, 1.0f);
+        walker.setPodFriction(2, 1.0f);
+
+        walker.setMuscleRatio(0, sin(time));
         //walker.setMuscleRatio(0, 0.0f);
-        walker.setMuscleRatio(1, 0.0f);
+        //walker.setMuscleRatio(1, 0.0f);
         walker.update(dt);
         time += dt;
-        return;*/
+        return;
 
         // Update state delay
         State current_state;
