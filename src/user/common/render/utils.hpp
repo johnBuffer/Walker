@@ -5,7 +5,7 @@
 #include "engine/common/math.hpp"
 
 
-namespace play
+namespace common
 {
 struct Utils
 {

@@ -95,7 +95,7 @@ struct NetworkRenderer
             connections_va = sf::VertexArray(sf::Quads, 4 * connections.size());
             uint32_t i{0};
             for (auto const& c: connections) {
-                Utils::generateLine(connections_va, 4 * i, c.start, c.end, 2.0f, sf::Color::White);
+                common::Utils::generateLine(connections_va, 4 * i, c.start, c.end, 2.0f, sf::Color::White);
                 ++i;
             }
         }
@@ -142,7 +142,7 @@ struct NetworkRenderer
                     float const width = std::max(1.0f, std::min(node_radius, std::abs(c.width.get())));
 
                     sf::Color const color = (sign > 0.0f) ? sf::Color{188, 226, 158} : sf::Color{255, 135, 135};
-                    Utils::generateLine(connections_va, 4 * i, c.start, c.end, width, color);
+                    common::Utils::generateLine(connections_va, 4 * i, c.start, c.end, width, color);
                     ++i;
                 }
             }

@@ -1,6 +1,8 @@
 #pragma once
 #include "engine/common/color_utils.hpp"
 
+#include "user/common/render/utils.hpp"
+
 #include "user/playing/render/target.hpp"
 #include "./walker.hpp"
 
@@ -105,20 +107,20 @@ struct CreatureDrawable
         {
             float const contraction = creature.getMuscleRatio(0);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
+            common::Utils::generateBezier(muscle_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
         }
 
         {
             float const contraction = creature.getMuscleRatio(1);
             auto const color = getMuscleColor(contraction);
-            Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
+            common::Utils::generateBezier(muscle_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, color, -offset_muscle + (1.0f - contraction) * muscle_contraction_size);
         }
 
         // Rest
-        Utils::generateBezier(side_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, body_color, -20.0f);
-        Utils::generateBezier(side_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, body_color, -20.0f);
-        Utils::generateBezier(side_3_va, creature.getJoint(0).position, mid_joint, creature.getJoint(1).position, bezier_pts, body_color, 5.0f);
-        Utils::generateBezier(side_4_va, creature.getJoint(3).position, mid_joint, creature.getJoint(2).position, bezier_pts, body_color, 5.0f);
+        common::Utils::generateBezier(side_1_va, creature.getJoint(0).position, mid_joint, creature.getJoint(3).position, bezier_pts, body_color, -20.0f);
+        common::Utils::generateBezier(side_2_va, creature.getJoint(1).position, mid_joint, creature.getJoint(2).position, bezier_pts, body_color, -20.0f);
+        common::Utils::generateBezier(side_3_va, creature.getJoint(0).position, mid_joint, creature.getJoint(1).position, bezier_pts, body_color, 5.0f);
+        common::Utils::generateBezier(side_4_va, creature.getJoint(3).position, mid_joint, creature.getJoint(2).position, bezier_pts, body_color, 5.0f);
 
         context.draw(muscle_1_va);
         context.draw(muscle_2_va);
@@ -126,12 +128,12 @@ struct CreatureDrawable
         // Draw links (bones and muscles)
         auto const& objects = creature.system.objects;
         float const width   = 4.0f;
-        Utils::generateLine(link_va,  0, objects[0].position, objects[4].position, width, base_color);
-        Utils::generateLine(link_va,  4, objects[1].position, objects[4].position, width, base_color);
-        Utils::generateLine(link_va,  8, objects[2].position, objects[4].position, width, base_color);
-        Utils::generateLine(link_va, 12, objects[3].position, objects[4].position, width, base_color);
+        common::Utils::generateLine(link_va,  0, objects[0].position, objects[4].position, width, base_color);
+        common::Utils::generateLine(link_va,  4, objects[1].position, objects[4].position, width, base_color);
+        common::Utils::generateLine(link_va,  8, objects[2].position, objects[4].position, width, base_color);
+        common::Utils::generateLine(link_va, 12, objects[3].position, objects[4].position, width, base_color);
         context.draw(link_va);
-        Utils::setVertexArrayColor(link_va, {0, 0, 0, dark_tone});
+        common::Utils::setVertexArrayColor(link_va, {0, 0, 0, dark_tone});
         context.draw(link_va);
 
         context.draw(side_1_va);

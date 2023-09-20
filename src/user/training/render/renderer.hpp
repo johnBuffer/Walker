@@ -56,7 +56,7 @@ struct Renderer : public pez::core::IRenderer
         auto const& demo = pez::core::getProcessor<Demo>();
         walker.initialize(demo.task.walker);
 
-        Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
+        common::Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
 
         background.position = {-25.0f, -25.0f};
