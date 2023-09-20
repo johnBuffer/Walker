@@ -1,52 +1,63 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "engine/common/vec.hpp"
 
 
 struct ViewportHandler
 {
     struct State
     {
-        sf::Vector2f center;
-        sf::Vector2f offset;
-        float zoom;
-        bool clicking;
-        sf::Vector2f mouse_position;
-        sf::Vector2f mouse_world_position;
+        Vec2          center;
+        Vec2          offset;
+        float         zoom;
+        float         scale;
+        bool          clicking;
+        Vec2          mouse_position;
+        Vec2          mouse_world_position;
         sf::Transform transform;
 
-        State(sf::Vector2f render_size, const float base_zoom = 1.0f)
+        explicit
+        State(Vec2 render_size, const float base_zoom = 1.0f)
             : center(render_size.x * 0.5f, render_size.y * 0.5f)
             , offset(center / base_zoom)
             , zoom(base_zoom)
+            , scale(1.0f)
             , clicking(false)
-        {}
+        {
+        }
 
         void updateState()
         {
-            const float z = zoom;
-            transform = sf::Transform::Identity;
+            transform = {};
             transform.translate(center);
-            transform.scale(z, z);
-            transform.translate(-offset);
+            transform.scale(zoom, zoom);
+            transform.translate(offset);
         }
 
-        void updateMousePosition(sf::Vector2f new_position)
+        void updateMousePosition(Vec2 new_position)
         {
             mouse_position = new_position;
-            const sf::Vector2f pos(static_cast<float>(new_position.x), static_cast<float>(new_position.y));
-            mouse_world_position = offset + (pos - center) / zoom;
+            mouse_world_position = offset + (mouse_position * scale - center) / (zoom * scale);
+        }
+
+        void setCenter(Vec2 c)
+        {
+            center = c;
+            updateState();
         }
     };
 
     State state;
 
-    ViewportHandler(sf::Vector2f size)
+    explicit
+    ViewportHandler(Vec2 size = {}, float scale = 1.0f)
         : state(size)
     {
+        state.scale = scale;
         state.updateState();
     }
 
-    void addOffset(sf::Vector2f v)
+    void addOffset(Vec2 v)
     {
         state.offset += v / state.zoom;
         state.updateState();
@@ -60,7 +71,7 @@ struct ViewportHandler
 
     void wheelZoom(float w)
     {
-        if (w) {
+        if (w != 0.0f) {
             const float zoom_amount = 1.2f;
             const float delta = w > 0 ? zoom_amount : 1.0f / zoom_amount;
             zoom(delta);
@@ -73,15 +84,16 @@ struct ViewportHandler
         setFocus(state.center);
     }
 
+    [[nodiscard]]
     const sf::Transform& getTransform() const
     {
         return state.transform;
     }
 
-    void click(sf::Vector2f relative_click_position)
+    void click(Vec2 relative_click_position)
     {
         state.mouse_position = relative_click_position;
-        state.clicking = true;
+        state.clicking       = true;
     }
 
     void unclick()
@@ -89,17 +101,17 @@ struct ViewportHandler
         state.clicking = false;
     }
 
-    void setMousePosition(sf::Vector2f new_mouse_position)
+    void setMousePosition(Vec2 new_mouse_position)
     {
         if (state.clicking) {
-            addOffset(state.mouse_position - new_mouse_position);
+            addOffset(new_mouse_position - state.mouse_position);
         }
         state.updateMousePosition(new_mouse_position);
     }
 
-    void setFocus(sf::Vector2f focus_position)
+    void setFocus(Vec2 focus_position)
     {
-        state.offset = focus_position;
+        state.offset = -focus_position;
         state.updateState();
     }
 
@@ -109,13 +121,13 @@ struct ViewportHandler
         state.updateState();
     }
 
-    sf::Vector2f getMouseWorldPosition() const
+    Vec2 getMouseWorldPosition() const
     {
         return state.mouse_world_position;
     }
 
-    sf::Vector2f getScreenCoords(sf::Vector2f world_pos) const
+    Vec2 getScreenCoords(Vec2 world_pos) const
     {
-        return state.transform.transformPoint(world_pos);
+        return {};//state.transform.transformPoint(world_pos);
     }
 };

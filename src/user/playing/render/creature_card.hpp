@@ -6,7 +6,7 @@
 #include "engine/common/racc.hpp"
 
 
-struct CreatureCard
+struct WalkerCard
 {
     static float constexpr corner_radius = 20.0f;
     static float constexpr width         = 500.0f;
@@ -41,13 +41,13 @@ struct CreatureCard
     sf::Text text_label_speed;
 
     explicit
-    CreatureCard(sf::Color color, Creature const& creature)
-            : background{{width, height}, corner_radius, color}
-            , progress_back{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
-            , progress_bar{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
-            , outline_base{{width_out, height_out}, corner_radius + outline, color}
-            , outline_alpha{{width_out, height_out}, corner_radius + outline, {0, 0, 0, dark_alpha_light}}
-            , speed{100}
+    WalkerCard(sf::Color color, Walker const& creature)
+        : background{{width, height}, corner_radius, color}
+        , progress_back{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
+        , progress_bar{{width_in, 10.0f}, 5.0f, {0, 0, 0, dark_alpha_light}}
+        , outline_base{{width_out, height_out}, corner_radius + outline, color}
+        , outline_alpha{{width_out, height_out}, corner_radius + outline, {0, 0, 0, dark_alpha_light}}
+        , speed{100}
     {
         font.loadFromFile("res/font.ttf");
         text.setFont(font);
@@ -74,7 +74,7 @@ struct CreatureCard
         position.setSpeed(2.0f);
     }
 
-    void update(SimulationPlaying const& simulation, uint32_t target_id, Creature const& creature)
+    /*void update(SimulationPlaying const& simulation, uint32_t target_id, Creature const& creature)
     {
         Vec2 const  last_target    = (target_id > 0) ? simulation.targets[target_id - 1] : conf::world_size * 0.5f;
         float const distance       = MathVec2::length(simulation.targets[target_id] - last_target);
@@ -90,14 +90,14 @@ struct CreatureCard
             speed.addValue(MathVec2::length(move) / dt * 0.1f);
         }
         ++frame_id;
-    }
+    }*/
 
     void setPosition(Vec2 pos)
     {
         position = pos;
     }
 
-    void render(RenderContext& context)
+    void render(pez::render::Context& context)
     {
         Vec2 const pos = position;
 

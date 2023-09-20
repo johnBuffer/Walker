@@ -1,5 +1,6 @@
 #pragma once
 
+#include "engine/engine.hpp"
 #include "engine/common/number_generator.hpp"
 
 #include "./task.hpp"
@@ -8,28 +9,28 @@
 #include "engine/common/color_utils.hpp"
 
 
-struct SimulationPlaying
+namespace playing
 {
-    std::vector<Creature> creatures;
-    std::vector<WalkTask>     tasks;
-    std::vector<Vec2>     targets;
-    std::vector<size_t> target_remaining;
 
-    tp::ThreadPool thread_pool;
-    PhysicSolver   solver;
+struct Simulation : public pez::core::IProcessor
+{
+    PhysicSolver& solver;
+
+    std::vector<Walker>   creatures;
+    std::vector<WalkTask> tasks;
+    std::vector<Vec2>     targets;
+    std::vector<uint64_t> target_remaining;
 
     float time = 0.0f;
     float const freeze_time = 0.0f;
 
-    SimulationPlaying()
-        : thread_pool{16}
-        , solver(IVec2(480, 480), thread_pool)
+    Simulation()
+        : solver{pez::core::getProcessor<PhysicSolver>()}
     {
         createTargets();
         createBackground();
 
-        createCreature("res/04.bin", {121, 123, 255}, "Solution 1");
-        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 4");
+        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 1");
 
         target_remaining.resize(targets.size());
         for (auto& t : target_remaining) {
@@ -37,7 +38,7 @@ struct SimulationPlaying
         }
     }
 
-    void update(float dt);
+    void update(float dt) override;
 
     void createCreature(std::string const& genome_filename, sf::Color color, std::string const& name)
     {
@@ -98,7 +99,7 @@ struct SimulationPlaying
         }
     }
 
-    void createExplosion(uint32_t target_id, sf::Color color)
+    void createExplosion(uint64_t target_id, sf::Color color)
     {
         float const physic_scale = conf::maximum_distance / static_cast<float>(solver.grid.width);
 
@@ -107,7 +108,6 @@ struct SimulationPlaying
         float const radius       = 50.0f;
         float const world_radius = radius / physic_scale;
         for (auto& obj: solver.objects) {
-
             Vec2 v = obj.position - world_pos;
             float const dist = MathVec2::length2(v);
             if (dist < world_radius * world_radius) {
@@ -118,28 +118,5 @@ struct SimulationPlaying
             }
         }
     }
-
-    void createExplosionCone(uint32_t target_id, Creature const& creature, sf::Color color)
-    {
-        float const physic_scale = conf::maximum_distance / static_cast<float>(solver.grid.width);
-
-        auto const& position     = targets[target_id];
-        auto const  world_pos    = position / physic_scale;
-        float const radius       = 50.0f;
-        float const world_radius = radius / physic_scale;
-        for (auto& obj: solver.objects) {
-            Vec2 const v = obj.position - world_pos;
-            float const d = MathVec2::length(v);
-            Vec2 const  n = v / d;
-            float const dot = MathVec2::dot(n, creature.getHeadDirection());
-            if (dot > 0.6f) {
-                if (d < world_radius) {
-                    obj.position += (world_radius - d) * MathVec2::normalize(v) * 0.6f * dot;
-                    obj.color = color;
-                    obj.radius = 1.0f;
-                    obj.current_ratio = 0.75f;
-                }
-            }
-        }
-    }
 };
+}

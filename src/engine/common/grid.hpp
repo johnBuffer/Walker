@@ -8,7 +8,7 @@ struct Grid
 {
 	struct HitPoint
 	{
-		T* cell;
+		const T* cell;
 		float dist;
 
 		HitPoint()

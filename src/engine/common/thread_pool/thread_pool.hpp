@@ -6,6 +6,8 @@
 #include <mutex>
 #include <atomic>
 
+#include "engine/engine.hpp"
+
 
 namespace tp
 {

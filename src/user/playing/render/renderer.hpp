@@ -1,21 +1,23 @@
 #pragma once
-#include "engine/window_context_handler.hpp"
+#include "engine/window/window_context_handler.hpp"
 #include "user/playing/simulation/simulation.hpp"
 #include "engine/common/smooth/smooth_value.hpp"
 
-#include "utils.hpp"
+#include "user/common/render/utils.hpp"
 #include "user/common/creature_drawable.hpp"
 #include "./target.hpp"
 #include "user/common/network_renderer.hpp"
 #include "./creature_card.hpp"
 
-namespace play
+
+namespace playing
 {
 struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    SimulationPlaying& simulation;
+    Simulation& simulation;
+    tp::ThreadPool& thread_pool;
 
     std::vector<CreatureDrawable> creature_drawables;
 
@@ -29,7 +31,7 @@ struct Renderer
 
     sf::VertexArray shadow_va;
 
-    std::vector<CreatureCard> cards;
+    std::vector<WalkerCard> cards;
     Card background;
     Card network_back;
     Card network_out;
@@ -39,8 +41,9 @@ struct Renderer
     float const network_outline = 10.0f;
 
     explicit
-    Renderer(SimulationPlaying& simulation_)
+    Renderer(Simulation& simulation_)
         : simulation{simulation_}
+        , thread_pool{pez::core::getSingleton<tp::ThreadPool>()}
         , objects_va{sf::PrimitiveType::Quads}
         , shadow_va{sf::PrimitiveType::TriangleFan, circle_pts}
         , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
@@ -80,7 +83,7 @@ struct Renderer
         for (auto const& t : simulation.tasks) {
             cards.emplace_back(t.color, simulation.creatures[t.creature_idx]);
             cards.back().rank = i;
-            cards.back().setPosition({card_margin, card_margin + i * (CreatureCard::height + card_margin)});
+            cards.back().setPosition({card_margin, card_margin + i * (WalkerCard::height + card_margin)});
             cards.back().text.setString(t.name);
             ++i;
         }
@@ -97,7 +100,7 @@ struct Renderer
         hud_va[3].color = {0, 0, 0, 150};
     }
 
-    void render(RenderContext& context, float dt)
+    void render(pez::render::Context& context, float dt)
     {
         background.render(context);
 
@@ -158,14 +161,14 @@ struct Renderer
 
         //context.drawDirect(hud_va);
 
-        std::vector<CreatureCard*> sorted_cards;
+        std::vector<WalkerCard*> sorted_cards;
         for (auto& c : cards) { sorted_cards.push_back(&c); }
         std::sort(sorted_cards.begin(), sorted_cards.end(), [](auto const* t1, auto const* t2) {return t1->progression > t2->progression;});
 
         {
             uint32_t i{0};
             for (auto const &t: simulation.tasks) {
-                cards[i].update(simulation, t.target_idx, simulation.creatures[t.creature_idx]);
+                //cards[i].update(simulation, t.target_idx, simulation.creatures[t.creature_idx]);
                 cards[i].render(context);
                 ++i;
             }
@@ -175,7 +178,7 @@ struct Renderer
             uint32_t i{0};
             for (auto* c : sorted_cards) {
                 if (i != c->rank && c->position.isDone()) {
-                    c->setPosition({card_margin, card_margin + i * (CreatureCard::height + card_margin)});
+                    c->setPosition({card_margin, card_margin + i * (WalkerCard::height + card_margin)});
                     c->rank = i;
                 }
                 ++i;
@@ -185,8 +188,7 @@ struct Renderer
 
     void updateParticlesVA()
     {
-        auto const& solver      = simulation.solver;
-        auto&       thread_pool = simulation.thread_pool;
+        auto const& solver = simulation.solver;
         objects_va.resize(solver.objects.size() * 4);
 
         const float texture_size = 1024.0f;
@@ -204,9 +206,10 @@ struct Renderer
                 objects_va[idx + 2].texCoords = {texture_size, texture_size};
                 objects_va[idx + 3].texCoords = {0.0f        , texture_size};
 
-                const sf::Color color(to<uint8_t>(to<float>(object.color.r) * object.current_ratio),
-                                      to<uint8_t>(to<float>(object.color.g) * object.current_ratio),
-                                      to<uint8_t>(to<float>(object.color.b) * object.current_ratio));
+                const sf::Color color(static_cast<uint8_t>(static_cast<float>(object.color.r) * object.current_ratio),
+                                      static_cast<uint8_t>(static_cast<float>(object.color.g) * object.current_ratio),
+                                      static_cast<uint8_t>(static_cast<float>(object.color.b) * object.current_ratio));
+
                 objects_va[idx + 0].color = color;
                 objects_va[idx + 1].color = color;
                 objects_va[idx + 2].color = color;

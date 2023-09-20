@@ -3,18 +3,17 @@
 
 struct Muscle
 {
-    uint32_t link_idx = 0;
-    float    strength = 0.8f;
+    uint64_t link_idx = 0;
 
     float    rest_size = 0.0f;
     float    contraction_ratio = 0.0f;
     float    extension_ratio   = 0.0f;
     float    current_ratio = 0.0f;
     float    target_ratio = 0.0f;
-    float    speed = 1.0f;
+    float    speed = 5.0f;
 
     Muscle() = default;
-    Muscle(uint32_t idx, float size, float contraction, float extension)
+    Muscle(uint64_t idx, float size, float contraction, float extension)
         : link_idx{idx}
         , rest_size{size}
         , contraction_ratio{contraction}
@@ -38,6 +37,16 @@ struct Muscle
     }
 
     [[nodiscard]]
+    float getCurrentSize() const
+    {
+        if (target_ratio > 0.0f) {
+            return rest_size * (1.0f + extension_ratio * current_ratio);
+        } else {
+            return rest_size * (1.0f + contraction_ratio * current_ratio);
+        }
+    }
+
+    [[nodiscard]]
     float getCurrentRatio(VerletLink const& link) const
     {
         float const delta = link.current_length - rest_size;
@@ -52,12 +61,13 @@ struct Muscle
 
 struct Pod
 {
-    uint32_t object_idx = 0;
-    float speed = 4.0f;
+    uint64_t object_idx = 0;
+    float speed = 8.0f;
     float current_friction = 0.0f;
     float target_friction = 0.0f;
 
-    Pod(uint32_t idx)
+    explicit
+    Pod(uint64_t idx)
         : object_idx{idx}
     {}
 
@@ -74,24 +84,19 @@ struct Pod
     }
 };
 
-struct Creature
+struct Walker
 {
     VerletSystem system;
 
     float time = 0.0f;
 
-    float muscle_size = 100.0f;
-
     std::vector<Muscle> muscles;
     std::vector<Pod>    pods;
 
-    Vec2 last_contraction = {};
-    static float constexpr contraction_coef = 0.125f;
-
-    Creature() = default;
+    Walker() = default;
 
     explicit
-    Creature(Vec2 position)
+    Walker(Vec2 position)
     {
         float const base = 50.0f;
         addPod({position.x - base, position.y - base}); // 0
@@ -101,9 +106,9 @@ struct Creature
         addJoint(position);
 
         // Muscles
-        addMuscle(0, 3, base, 0.5f, 0.5f);
-        addMuscle(1, 2, base, 0.5f, 0.5f);
-        // Stabilizers
+        addMuscle(0, 3, 2.0f * base, 0.5f, 0.5f);
+        addMuscle(1, 2, 2.0f * base, 0.5f, 0.5f);
+        // Bones
         addBone(0, 1);
         addBone(3, 2);
         addBone(0, 4);
@@ -170,13 +175,13 @@ struct Creature
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
         const float muscle_strength = 0.05f;
-        muscles.emplace_back(static_cast<uint32_t>(system.links.size()), size, contraction, extension);
+        muscles.emplace_back(system.links.size(), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;
         muscle.strength  = muscle_strength;
     }
 
-    void addJoint(Vec2 position, float mass = 10.0f)
+    void addJoint(Vec2 position, float mass = 1.0f)
     {
         auto& joint = system.objects.emplace_back(position);
         joint.setMass(mass);
@@ -184,8 +189,8 @@ struct Creature
 
     void addPod(Vec2 position)
     {
-        pods.emplace_back(static_cast<uint32_t>(system.objects.size()));
-        addJoint(position, 1.0f);
+        pods.emplace_back(system.objects.size());
+        addJoint(position, 10.0f);
     }
 
     VerletLink& getMuscle(uint64_t idx)

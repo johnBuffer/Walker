@@ -1,28 +1,6 @@
 #pragma once
 #include "smooth.hpp"
-#include "engine/common/vec.hpp"
-
-
-template<typename TTimeType>
-struct GenericTimer
-{
-    static TTimeType time;
-
-    static void update(TTimeType dt)
-    {
-        time += dt;
-    }
-
-    static TTimeType getTime()
-    {
-        return time;
-    }
-};
-
-template<typename TTimeType>
-TTimeType GenericTimer<TTimeType>::time = {};
-
-using Timer = GenericTimer<float>;
+#include "engine/engine.hpp"
 
 
 template<typename TValueType>
@@ -98,7 +76,7 @@ public:
     [[nodiscard]]
     float getElapsedTime() const
     {
-        return (Timer::getTime() - start_time) * m_speed;
+        return (pez::core::getTime() - start_time) * m_speed;
     }
 
     [[nodiscard]]
@@ -127,7 +105,7 @@ public:
 
     void updateStartTime()
     {
-        start_time = Timer::getTime();
+        start_time = pez::core::getTime();
     }
 
     [[nodiscard]]
@@ -161,3 +139,4 @@ public:
 
 using SmoothFloat = SmoothValue<float>;
 using SmoothVec2  = SmoothValue<Vec2>;
+using SmoothVec3  = SmoothValue<Vec3>;

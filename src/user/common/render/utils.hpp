@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
+#include "engine/common/math.hpp"
+
 
 namespace play
 {

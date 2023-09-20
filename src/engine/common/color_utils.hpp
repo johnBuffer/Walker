@@ -1,7 +1,6 @@
 #pragma once
-#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics.hpp>
 #include "utils.hpp"
-#include "math.hpp"
 
 
 struct ColorUtils
@@ -15,10 +14,7 @@ struct ColorUtils
     template<typename TVec3>
     static sf::Color createColor(TVec3 vec)
     {
-        constexpr float m{255.0f};
-        return { to<uint8_t>(std::min(m, vec.x)),
-                 to<uint8_t>(std::min(m, vec.y)),
-                 to<uint8_t>(std::min(m, vec.z)) };
+        return { to<uint8_t>(vec.x), to<uint8_t>(vec.y), to<uint8_t>(vec.z) };
     }
 
     static sf::Color interpolate(sf::Color color_1, sf::Color color_2, float ratio)
@@ -29,20 +25,26 @@ struct ColorUtils
             to<float>(color_1.b) + ratio * to<float>(color_2.b - color_1.b)
         );
     }
+//
+//    static sf::Color getRainbow(float t)
+//    {
+//        const float r = sin(t);
+//        const float g = sin(t + 0.33f * 2.0f * Math::PI);
+//        const float b = sin(t + 0.66f * 2.0f * Math::PI);
+//        return createColor(255 * r * r, 255 * g * g, 255 * b * b);
+//    }
 
-    static sf::Color getRainbow(float t)
+    static Vec3 toVec3(const sf::Color& color)
     {
-        const float r = sin(t);
-        const float g = sin(t + 0.33f * 2.0f * Math::PI);
-        const float b = sin(t + 0.66f * 2.0f * Math::PI);
-        return createColor(255 * r * r, 255 * g * g, 255 * b * b);
+        return {
+            to<float>(color.r),
+            to<float>(color.g),
+            to<float>(color.b)
+        };
     }
 
-    static sf::Color scale(sf::Color color, float scale)
-    {
-        Vec3 const v{ static_cast<float>(color.r),
-                      static_cast<float>(color.g),
-                      static_cast<float>(color.b) };
-        return createColor(v * scale);
-    }
+//    static sf::Color multiply(const sf::Color& color, float factor)
+//    {
+//        return toColor(toVector3f(color) * factor);
+//    }
 };

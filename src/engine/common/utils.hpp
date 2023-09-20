@@ -1,6 +1,7 @@
 #pragma once
 #include "index_vector.hpp"
 #include <sstream>
+#include <iomanip>
 
 
 template<typename U, typename T>
@@ -22,18 +23,34 @@ T sign(T v)
 
 
 template<typename T>
-static std::string toString(T value)
+std::string toString(const T& v, const uint8_t decimals = 2)
 {
     std::stringstream sx;
-    sx << value;
+    sx << std::setprecision(decimals) << std::fixed << v;
     return sx.str();
 }
 
 
-template<typename T>
-sf::Vector2f toVector2f(sf::Vector2<T> v)
+template<template<typename> class ContainerType, typename T, typename TCallback>
+void enumerate(ContainerType<T>& container, TCallback&& callback)
 {
-    return {to<float>(v.x), to<float>(v.y)};
+    uint64_t i(0);
+    for (T& obj : container) {
+        callback(i++, obj);
+    }
+}
+
+template<typename TContainer, typename TPredicate>
+void remove_if(TContainer& container, TPredicate&& pred)
+{
+    container.erase(std::remove_if(container.begin(), container.end(), pred), container.end());
+}
+
+
+template<typename T>
+uint64_t getVectorByteSize(const std::vector<T>& v)
+{
+    return v.size() * sizeof(T);
 }
 
 template<typename TMax, typename TCallback, typename TData>
