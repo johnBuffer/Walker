@@ -2,8 +2,7 @@
 #include "engine/common/utils.hpp"
 
 #include "./selector.hpp"
-#include "user/common/neat_old/mutator.hpp"
-#include "user/common/neat_old/nn_utils.hpp"
+#include "user/common/neat/mutator.hpp"
 #include "user/training/genome.hpp"
 
 
@@ -14,7 +13,6 @@ struct Evolver
     TrainingState& state;
 
     Selector selector;
-    nt::Mutator<conf::input_count, conf::output_count> mutator;
 
     GenomeVector old_generation;
     GenomeVector new_generation;
@@ -24,11 +22,6 @@ struct Evolver
     {
         old_generation.resize(conf::population_size);
         new_generation.resize(conf::population_size);
-    }
-
-    void reset()
-    {
-        mutator = {};
     }
 
     void createNewGeneration()
@@ -63,10 +56,8 @@ struct Evolver
             const uint32_t genome_idx = selector.pick();
             new_generation.push_back(old_generation[genome_idx]);
             auto& new_genome = new_generation.back();
-            // Mutate topology
-            mutator.mutate(new_genome.genome);
-            // Mutate weights
-            nn::Utils::mutate(new_genome.genome);
+            // Mutate genome
+            nt::Mutator::mutateGenome(new_genome.genome);
         }
 
         updatePopulation();

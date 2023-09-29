@@ -6,15 +6,15 @@
 
 #include "user/common/walker.hpp"
 #include "user/common/configuration.hpp"
-#include "user/common/neat_old/genome.hpp"
+#include "user/common/neat/genome.hpp"
 
 
 struct WalkTask
 {
     uint64_t creature_idx = {0};
     uint64_t target_idx   = {0};
-    nt::Genome<9, 6>  genome;
-    nt::Network<9, 6> network;
+    nt::Genome  genome;
+    nt::Network network;
 
     sf::Color color;
 
@@ -50,7 +50,7 @@ struct WalkTask
         float const dist_to_target              = MathVec2::length(to_target);
         const float to_target_dot   = MathVec2::dot(to_target / dist_to_target, creature.getHeadDirection());
         const float to_target_dot_n = MathVec2::dot(to_target / dist_to_target, MathVec2::normal(creature.getHeadDirection()));
-        const auto& output = network.execute({
+        bool const success = network.execute({
             dist_to_target / conf::maximum_distance, // Distance to target
             to_target_dot,                       // Direction evaluation
             to_target_dot_n,                     // Direction normal evaluation
@@ -62,18 +62,22 @@ struct WalkTask
             creature.getMuscleRatio(1),
         });
 
-        for (uint32_t i{0}; i<4; ++i) {
-            creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
+        if (success) {
+            auto const& output = network.getResult();
+            for (uint32_t i{0}; i<4; ++i) {
+                creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
+            }
+
+            for (uint32_t i{0}; i<2; ++i) {
+                creature.setMuscleRatio(i, output[4 + i]);
+            }
         }
 
-        for (uint32_t i{0}; i<2; ++i) {
-            creature.setMuscleRatio(i, output[4 + i]);
-        }
     }
 
     void loadGenome(std::string const& filename)
     {
-        genome.loadFromFile(filename);
+        //genome.loadFromFile(filename);
         network = genome.generateNetwork();
     }
 };

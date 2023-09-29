@@ -2,14 +2,14 @@
 #include "engine/engine.hpp"
 
 #include "user/common/configuration.hpp"
-#include "user/common/neat_old/genome.hpp"
+#include "user/common/neat/genome.hpp"
 
 
 struct Genome : public pez::core::Entity
 {
     /// Attributes
     float score = 0.0f;
-    nt::Genome<conf::input_count, conf::output_count> genome;
+    nt::Genome genome;
 
     /// Methods
     Genome() = default;
@@ -23,7 +23,7 @@ struct Genome : public pez::core::Entity
     {}
 
     [[nodiscard]]
-    nt::Network<conf::input_count, conf::output_count> generateNetwork() const
+    nt::Network generateNetwork() const
     {
         return genome.generateNetwork();
     }

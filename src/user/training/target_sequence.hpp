@@ -1,5 +1,6 @@
 #pragma once
 #include "engine/engine.hpp"
+#include "engine/common/number_generator.hpp"
 
 
 struct TargetSequence : pez::core::Entity
