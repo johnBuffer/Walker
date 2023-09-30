@@ -40,6 +40,11 @@ struct Mutator
 
     static void mutateWeights(nt::Genome& genome)
     {
+        // Nothing to do if no connections
+        if (genome.connections.empty()) {
+            return;
+        }
+
         Genome::Connection& c = pickRandom(genome.connections);
         if (RNGf::proba(conf::mut::new_value_proba)) {
             c.weight += RNGf::getFullRange(conf::mut::weight_range);
@@ -48,6 +53,11 @@ struct Mutator
 
     static void newNode(nt::Genome& genome)
     {
+        // Nothing to do if no connections
+        if (genome.connections.empty()) {
+            return;
+        }
+
         uint32_t const connection_idx = getRandIndex(genome.connections.size());
         genome.splitConnection(connection_idx);
     }
@@ -67,7 +77,7 @@ struct Mutator
         uint32_t       idx_2   = getRandIndex(count_2) + genome.info.inputs;
         // Create the new connection
         if (!genome.tryCreateConnection(idx_1, idx_2, RNGf::getFullRange(conf::mut::weight_range))) {
-            std::cout << "Cannot create connection " << idx_1 << " -> " << idx_2 << std::endl;
+            //std::cout << "Cannot create connection " << idx_1 << " -> " << idx_2 << std::endl;
         }
     }
 
@@ -80,7 +90,8 @@ struct Mutator
     template<typename TDataType>
     static TDataType& pickRandom(std::vector<TDataType>& container)
     {
-        return container[getRandIndex(container.size())];
+        uint32_t const idx = getRandIndex(container.size());
+        return container[idx];
     }
 };
 }

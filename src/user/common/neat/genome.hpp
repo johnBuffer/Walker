@@ -16,6 +16,7 @@ public: // Internal structs
     {
         float      bias       = 0.0f;
         Activation activation = Activation::Sigm;
+        uint32_t   depth      = 0;
     };
 
     /// Represents a connection between two nodes
@@ -40,15 +41,15 @@ public: // Methods
     Genome() = default;
 
     explicit
-    Genome(nt::Network::Info const& info_)
-        : info{info_}
+    Genome(uint32_t inputs, uint32_t outputs)
+        : info{inputs, outputs}
     {
         // Create inputs
-        for (uint32_t i{info.inputs + info.outputs}; i--;) {
+        for (uint32_t i{info.inputs}; i--;) {
             createNode(Activation::None, false);
         }
         // Create outputs
-        for (uint32_t i{info.inputs + info.outputs}; i--;) {
+        for (uint32_t i{info.outputs}; i--;) {
             createNode(Activation::Sigm, false);
         }
     }
@@ -105,17 +106,34 @@ public: // Methods
         connections.pop_back();
     }
 
+    /// Returns nodes indexes sorted topologically
     [[nodiscard]]
-    nt::Network generateNetwork() const
+    std::vector<uint32_t> getOrder() const
+    {
+        std::vector<uint32_t> order(nodes.size());
+        for (uint32_t i{0}; i < nodes.size(); ++i) {
+            order[i] = i;
+        }
+
+        std::sort(order.begin(), order.end(), [this](uint32_t a, uint32_t b) {
+            return nodes[a].depth < nodes[b].depth;
+        });
+
+        return order;
+    }
+
+    nt::Network generateNetwork()
     {
         nt::Network network;
         network.initialize(info, static_cast<uint32_t>(connections.size()));
 
+        // Create nodes and connections
         uint32_t   conn_idx{0};
         auto const node_count = static_cast<uint32_t>(nodes.size());
         for (uint32_t node_idx{0}; node_idx < node_count; ++node_idx) {
             // Initialize node
-            network.setNode(node_idx, nodes[node_idx].activation, nodes[node_idx].bias);
+            auto const& node = nodes[node_idx];
+            network.setNode(node_idx, node.activation, node.bias, graph.nodes[node_idx].getOutConnectionCount());
 
             // Create its connections
             for (auto const& c : connections) {
@@ -125,6 +143,27 @@ public: // Methods
                 }
             }
         }
+
+        // Compute order
+        uint32_t max_depth = 0;
+        graph.computeDepth();
+        for (uint32_t i{0}; i < node_count; ++i) {
+            nodes[i].depth = graph.nodes[i].depth;
+            max_depth = std::max(nodes[i].depth, max_depth);
+        }
+
+        // Set outputs to the last "layer"
+        uint32_t const output_depth = std::max(max_depth, 1u);
+        for (uint32_t i{0}; i < info.outputs; ++i) {
+            nodes[info.inputs + i].depth = output_depth;
+        }
+
+        // Update depth in the network
+        for (uint32_t i{0}; i < node_count; ++i) {
+            network.setNodeDepth(i, nodes[i].depth);
+        }
+
+        network.setOrder(getOrder());
 
         return network;
     }

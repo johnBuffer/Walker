@@ -16,6 +16,14 @@ public: // Internal structs
         uint32_t outputs = 0;
         uint32_t hidden  = 0;
 
+        Info() = default;
+
+        Info(uint32_t inputs_, uint32_t outputs_)
+            : inputs{inputs_}
+            , outputs{outputs_}
+            , hidden{0}
+        {}
+
         [[nodiscard]]
         uint32_t getNodeCount() const
         {
@@ -47,7 +55,8 @@ public: // Internal structs
 
     union Slot
     {
-        Node       node;
+        // By default, slot is initialized as a Node, just to allow resizing
+        Node       node       = {};
         Connection connection;
     };
 
@@ -68,19 +77,26 @@ public: // Methods
         info             = info_;
         connection_count = connection_count_;
 
-        slots.reserve(info.getNodeCount() + connection_count);
+        // Resize doesn't work because Node has a "non-trivial constructor"
+        slots.resize(info.getNodeCount() + connection_count);
         output.resize(info.outputs);
     }
 
-    void setOrder(std::vector<uint32_t>& order_)
+    void setOrder(std::vector<uint32_t> const& order_)
     {
         order = order_;
     }
 
-    void setNode(uint32_t i, Activation activation, float bias)
+    void setNode(uint32_t i, Activation activation, float bias, uint32_t connection_count_)
     {
-        slots[i].node.activation = ActivationFunction::getFunction(activation);
-        slots[i].node.bias       = bias;
+        slots[i].node.activation       = ActivationFunction::getFunction(activation);
+        slots[i].node.bias             = bias;
+        slots[i].node.connection_count = connection_count_;
+    }
+
+    void setNodeDepth(uint32_t i, uint32_t depth)
+    {
+        slots[i].node.depth = depth;
     }
 
     void setConnection(uint32_t i, uint32_t to, float weight)
@@ -142,6 +158,31 @@ public: // Methods
     std::vector<float> const& getResult() const
     {
         return output;
+    }
+
+    template<typename TCallback>
+    void foreachNode(TCallback&& callback)
+    {
+        uint32_t const node_count = info.getNodeCount();
+        for (uint32_t i{0}; i < node_count; ++i) {
+            callback(slots[i].node, i);
+        }
+    }
+
+    template<typename TCallback>
+    void foreachNode(TCallback&& callback) const
+    {
+        uint32_t const node_count = info.getNodeCount();
+        for (uint32_t i{0}; i < node_count; ++i) {
+            callback(slots[i].node, i);
+        }
+    }
+
+    /// Returns the depth of the network
+    [[nodiscard]]
+    uint32_t getDepth() const
+    {
+        return slots[order.back()].node.depth;
     }
 };
 }

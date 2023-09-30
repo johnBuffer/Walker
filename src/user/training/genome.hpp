@@ -17,13 +17,14 @@ struct Genome : public pez::core::Entity
     explicit
     Genome(pez::core::EntityID id_)
         : pez::core::Entity{id_}
+        , genome{conf::input_count, conf::output_count}
     {}
 
     void onRemove() override
     {}
 
     [[nodiscard]]
-    nt::Network generateNetwork() const
+    nt::Network generateNetwork()
     {
         return genome.generateNetwork();
     }

@@ -4,6 +4,7 @@
 
 void training::Demo::initialize()
 {
+    std::cout << "Initializing demo" << std::endl;
     time = 0.0f;
     task.initialize();
     need_init = false;

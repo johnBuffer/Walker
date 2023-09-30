@@ -50,6 +50,7 @@ struct NetworkRenderer
 
     void initialize(nt::Network const& nw)
     {
+        std::cout << "Initializing renderer with network " << nw.connection_count << " connections" << std::endl;
         network = &nw;
         nodes.clear();
         connections.clear();
@@ -145,11 +146,9 @@ struct NetworkRenderer
         }
 
         {
-            uint32_t i{0};
-            for (auto const& n : network->nodes) {
+            network->foreachNode([this](nt::Network::Node const& n, uint32_t i) {
                 nodes[i].value = n.getValue();
-                ++i;
-            }
+            });
         }
     }
 
@@ -158,7 +157,7 @@ struct NetworkRenderer
     [[nodiscard]]
     uint32_t getMaxDepth() const
     {
-        return getMax<uint32_t>(network->nodes, [](auto const& n) {return n.depth;});
+        return network->getDepth();
     }
 
     [[nodiscard]]

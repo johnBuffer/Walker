@@ -28,6 +28,8 @@ struct ActivationFunction
                 return relu;
             case Activation::Tanh:
                 return tanh;
+            default:
+                return none;
         }
     }
 

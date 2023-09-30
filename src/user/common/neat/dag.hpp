@@ -12,6 +12,12 @@ struct DAG
         uint32_t              incoming = 0;
         uint32_t              depth    = 0;
         std::vector<uint32_t> out;
+
+        [[nodiscard]]
+        uint32_t getOutConnectionCount() const
+        {
+            return static_cast<uint32_t>(out.size());
+        }
     };
 
     std::vector<Node> nodes;
@@ -25,21 +31,26 @@ struct DAG
     {
         // Ensure both nodes exist
         if (!isValid(from)) {
-            std::cout << "Cannot create connection " << from << " -> " << to << ": " << from << " is not valid" << std::endl;
+            //std::cout << "Cannot create connection " << from << " -> " << to << ": " << from << " is not valid" << std::endl;
             return false;
         }
         if (!isValid(from)) {
-            std::cout << "Cannot create connection " << from << " -> " << to << ": " << to << " is not valid" << std::endl;
+            //std::cout << "Cannot create connection " << from << " -> " << to << ": " << to << " is not valid" << std::endl;
             return false;
         }
         // Ensure there is no cycle
+        if (from == to) {
+            //std::cout << "Cannot connect " << from << " to itself" << std::endl;
+            return false;
+        }
+
         if (isAncestor(to, from)) {
-            std::cout << "Cannot create connection " << from << " -> " << to << ": " << to << " is an ancestor of " << from << std::endl;
+            //std::cout << "Cannot create connection " << from << " -> " << to << ": " << to << " is an ancestor of " << from << std::endl;
             return false;
         }
         // Ensure the connection doesn't already exist
         if (isParent(from, to)) {
-            std::cout << "Cannot create connection " << from << " -> " << to << ": already connected" << std::endl;
+            //std::cout << "Cannot create connection " << from << " -> " << to << ": already connected" << std::endl;
             return false;
         }
         // Add the connection in the parent node
