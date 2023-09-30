@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 
 #include "engine/common/utils.hpp"
@@ -83,20 +84,24 @@ struct NetworkRenderer
             uint32_t connection_idx = 0;
             uint32_t const node_count = nw.info.getNodeCount();
             for (uint32_t i{0}; i < node_count; ++i) {
-                const uint32_t connection_count = nw.slots[i].node.connection_count;
+                const uint32_t connection_count = nw.getNode(i).connection_count;
+                //std::cout << "Node " << i + 1 << "/" << nw.info.getNodeCount() << " with " << connection_count << " connections" << std::endl;
                 for (uint32_t k{0}; k < connection_count; ++k) {
+                    //std::cout << "Create connection " << connection_idx << std::endl;
                     auto& c = connections.emplace_back();
                     c.start = nodes[i].position;
                     c.end   = nodes[nw.getConnection(connection_idx).to].position;
                     ++connection_idx;
                 }
             }
+
+            assert(connection_idx == network->connection_count);
         }
 
         {
             connections_va = sf::VertexArray(sf::Quads, 4 * connections.size());
             uint32_t i{0};
-            for (auto const& c: connections) {
+            for (auto const& c : connections) {
                 common::Utils::generateLine(connections_va, 4 * i, c.start, c.end, 2.0f, sf::Color::White);
                 ++i;
             }

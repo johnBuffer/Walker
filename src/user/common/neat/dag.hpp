@@ -144,11 +144,23 @@ struct DAG
         return order;
     }
 
-    static bool check(bool b, std::string const& message)
+    void removeConnection(uint32_t from, uint32_t to)
     {
-        if (!b) {
-            std::cout << message << std::endl;
+        auto& connections = nodes[from].out;
+        uint32_t const count = connections.size();
+        uint32_t found = 0;
+        for (uint32_t i{0}; i < count - found;) {
+            if (connections[i] == to) {
+                std::swap(connections[i], connections.back());
+                connections.pop_back();
+                ++found;
+            } else {
+                ++i;
+            }
         }
-        return b;
+
+        if (!found) {
+            std::cout << "[WARNING] Connection " << from << " -> " << to << " not found" << std::endl;
+        }
     }
 };

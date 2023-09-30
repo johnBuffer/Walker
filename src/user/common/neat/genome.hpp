@@ -50,7 +50,7 @@ public: // Methods
         }
         // Create outputs
         for (uint32_t i{info.outputs}; i--;) {
-            createNode(Activation::Sigm, false);
+            createNode(Activation::Tanh, false);
         }
     }
 
@@ -80,6 +80,7 @@ public: // Methods
 
     void createConnection(uint32_t from, uint32_t to, float weight)
     {
+        graph.createConnection(from, to);
         connections.push_back({from, to, weight});
     }
 
@@ -102,6 +103,7 @@ public: // Methods
 
     void removeConnection(uint32_t i)
     {
+        graph.removeConnection(connections[i].from, connections[i].to);
         std::swap(connections[i], connections.back());
         connections.pop_back();
     }
@@ -143,6 +145,8 @@ public: // Methods
                 }
             }
         }
+
+        assert(conn_idx == network.connection_count);
 
         // Compute order
         uint32_t max_depth = 0;

@@ -89,9 +89,9 @@ public: // Methods
 
     void setNode(uint32_t i, Activation activation, float bias, uint32_t connection_count_)
     {
-        slots[i].node.activation       = ActivationFunction::getFunction(activation);
-        slots[i].node.bias             = bias;
-        slots[i].node.connection_count = connection_count_;
+        getNode(i).activation       = ActivationFunction::getFunction(activation);
+        getNode(i).bias             = bias;
+        getNode(i).connection_count = connection_count_;
     }
 
     void setNodeDepth(uint32_t i, uint32_t depth)
@@ -115,6 +115,17 @@ public: // Methods
     Connection& getConnection(uint32_t i)
     {
         return slots[info.getNodeCount() + i].connection;
+    }
+
+    Node& getNode(uint32_t i)
+    {
+        return slots[i].node;
+    }
+
+    [[nodiscard]]
+    Node const& getNode(uint32_t i) const
+    {
+        return slots[i].node;
     }
 
     Node& getOutput(uint32_t i)
@@ -142,7 +153,7 @@ public: // Methods
             float const value = node.getValue();
             for (uint32_t o{0}; o < node.connection_count; ++o) {
                 Connection const& c = getConnection(current_connection++);
-                slots[c.to].node.sum += value * c.weight;
+                getNode(c.to).sum += value * c.weight;
             }
         }
 
