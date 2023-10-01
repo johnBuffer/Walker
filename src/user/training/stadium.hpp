@@ -25,7 +25,6 @@ struct Stadium : public pez::core::IProcessor
         // Create genomes
         for (uint32_t i{0}; i < conf::population_size; ++i) {
             auto const id = pez::core::create<Genome>();
-            pez::core::get<Genome>(id).genome.loadFromFile("best_50.bin");
         }
 
         // Create tasks

@@ -31,4 +31,10 @@ namespace mut
     constexpr float offset_weight_proba = 0.7f;
     constexpr float offset_bias_proba   = 0.8f;
 }
+
+namespace util
+{
+    constexpr uint32_t best_save_period = 10;
+}
+
 }
