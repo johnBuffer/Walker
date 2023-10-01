@@ -10,7 +10,7 @@ struct Muscle
     float    extension_ratio   = 0.0f;
     float    current_ratio = 0.0f;
     float    target_ratio = 0.0f;
-    float    speed = 5.0f;
+    float    speed = 10.0f;
 
     Muscle() = default;
     Muscle(uint64_t idx, float size, float contraction, float extension)
@@ -23,7 +23,7 @@ struct Muscle
     void update(VerletLink& link, float dt)
     {
         current_ratio += (target_ratio - current_ratio) * speed * dt;
-        link.target_length = getTargetSize();
+        link.target_length = getCurrentSize();
     }
 
     [[nodiscard]]
@@ -62,7 +62,7 @@ struct Muscle
 struct Pod
 {
     uint64_t object_idx = 0;
-    float speed = 8.0f;
+    float speed = 30.0f;
     float current_friction = 0.0f;
     float target_friction = 0.0f;
 
@@ -106,8 +106,8 @@ struct Walker
         addJoint(position);
 
         // Muscles
-        addMuscle(0, 3, 2.0f * base, 0.5f, 0.5f);
-        addMuscle(1, 2, 2.0f * base, 0.5f, 0.5f);
+        addMuscle(0, 3, 2.0f * base, 0.25f, 0.25f);
+        addMuscle(1, 2, 2.0f * base, 0.25f, 0.25f);
         // Bones
         addBone(0, 1);
         addBone(3, 2);
@@ -168,13 +168,13 @@ struct Walker
 
     void addBone(uint32_t joint_1, uint32_t joint_2)
     {
-        const float strength = 1.0f;
+        const float strength = 0.5f;
         system.links.emplace_back(joint_1, joint_2, system.objects).strength = strength;
     }
 
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
-        const float muscle_strength = 0.05f;
+        const float muscle_strength = 0.5f;
         muscles.emplace_back(system.links.size(), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;
