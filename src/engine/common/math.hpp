@@ -50,6 +50,11 @@ struct Math
         const float n = x-b;
         return a * std::exp(-(n * n)/(2.0f * c * c));
     }
+
+    static float clampAmplitude(float x, float maximum)
+    {
+        return sign(x) * std::min(std::abs(x), maximum);
+    }
 };
 
 

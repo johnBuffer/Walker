@@ -141,6 +141,11 @@ public: // Methods
             return false;
         }
 
+        // Reset nodes
+        foreachNode([](Node& n, uint32_t) {
+            n.sum = 0.0f;
+        });
+
         // Initialize input
         for (uint32_t i{0}; i < info.inputs; ++i) {
             slots[i].node.sum = input[i];
@@ -152,8 +157,9 @@ public: // Methods
             Node const& node  = slots[i].node;
             float const value = node.getValue();
             for (uint32_t o{0}; o < node.connection_count; ++o) {
-                Connection const& c = getConnection(current_connection++);
-                getNode(c.to).sum += value * c.weight;
+                Connection& c = getConnection(current_connection++);
+                c.value = value * c.weight;
+                getNode(c.to).sum += c.value;
             }
         }
 

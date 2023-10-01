@@ -146,8 +146,8 @@ struct DAG
 
     void removeConnection(uint32_t from, uint32_t to)
     {
-        auto& connections = nodes[from].out;
-        uint32_t const count = connections.size();
+        auto&      connections = nodes[from].out;
+        auto const count       = static_cast<uint32_t>(connections.size());
         uint32_t found = 0;
         for (uint32_t i{0}; i < count - found;) {
             if (connections[i] == to) {

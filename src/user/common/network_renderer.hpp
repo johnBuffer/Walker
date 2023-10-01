@@ -57,6 +57,7 @@ struct NetworkRenderer
         connections.clear();
 
         // Create nodes
+        std::cout << getMaxDepth() << std::endl;
         std::vector<uint32_t> layers(getMaxDepth() + 1, 0);
         size.x = static_cast<float>(getMaxDepth() + 1) * (node_radius * 2.0f + node_spacing.x) - node_spacing.x + node_radius * 0.5f + 2.0f;
         for (uint32_t i{0}; i < nw.info.getNodeCount(); ++i) {
@@ -152,7 +153,7 @@ struct NetworkRenderer
 
         {
             network->foreachNode([this](nt::Network::Node const& n, uint32_t i) {
-                nodes[i].value = n.getValue();
+                nodes[i].value = Math::clampAmplitude(n.getValue(), 1.0f);
             });
         }
     }
