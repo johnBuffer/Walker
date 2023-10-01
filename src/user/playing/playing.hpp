@@ -13,7 +13,7 @@ struct Playing
     {
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
-        pez::render::WindowContextHandler app("Walk - Replay", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        pez::render::WindowContextHandler app("Walk - Replay", sf::Vector2u(conf::win::window_width, conf::win::window_height), settings, sf::Style::Default);
         playing::registerSystems();
         // Initialize solver and renderer
         bool emit = true;
@@ -29,7 +29,7 @@ struct Playing
         focus.setSpeed(1.5f);
         focus.setValueInstant(conf::world_size * 0.5f);
 
-        zoom.setValueInstant(conf::window_height / conf::maximum_distance * 0.95f);
+        zoom.setValueInstant(conf::win::window_height / conf::maximum_distance * 0.95f);
 
         float const creature_zoom = 2.5f;
         int32_t focus_creature = -1;
@@ -41,13 +41,13 @@ struct Playing
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::C, [&](sfev::CstEv){
             focus_creature = -1;
             focus = conf::world_size * 0.5f;
-            zoom  = conf::window_height / conf::maximum_distance * 0.95f;
+            zoom  = conf::win::window_height / conf::maximum_distance * 0.95f;
             pez::render::setFocus(conf::world_size * 0.5f);
-            pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
+            pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.95f);
         });
 
         pez::render::setFocus(conf::world_size * 0.5f);
-        pez::render::setZoom(conf::window_height / conf::maximum_distance * 0.95f);
+        pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.95f);
 
         constexpr uint32_t fps_cap = 60;
 

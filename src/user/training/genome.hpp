@@ -17,8 +17,9 @@ struct Genome : public pez::core::Entity
     explicit
     Genome(pez::core::EntityID id_)
         : pez::core::Entity{id_}
-        , genome{conf::input_count, conf::output_count}
-    {}
+    {
+        resetGenome();
+    }
 
     void onRemove() override
     {}
@@ -27,5 +28,10 @@ struct Genome : public pez::core::Entity
     nt::Network generateNetwork()
     {
         return genome.generateNetwork();
+    }
+
+    void resetGenome()
+    {
+        genome = nt::Genome{conf::input_count, conf::output_count};
     }
 };

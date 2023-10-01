@@ -5,7 +5,8 @@
 
 struct TrainingState
 {
-    uint32_t iteration = 0;
+    uint32_t iteration             = 0;
+    uint32_t iteration_exploration = 0;
 
     bool demo = false;
 
@@ -20,5 +21,11 @@ struct TrainingState
     void endDemo()
     {
         demo = false;
+    }
+
+    void newExploration()
+    {
+        iteration = 0;
+        ++iteration_exploration;
     }
 };

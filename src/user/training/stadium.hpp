@@ -1,4 +1,6 @@
 #pragma once
+#include <filesystem>
+
 #include "engine/engine.hpp"
 
 #include "user/training/walk.hpp"
@@ -32,6 +34,8 @@ struct Stadium : public pez::core::IProcessor
             // The 1 is to use training target sequence (as opposed to the constant one for demo, 0)
             pez::core::create<training::Walk>(i, 1);
         }
+
+        restartExploration();
     }
 
     void update(float dt) override
@@ -48,6 +52,10 @@ struct Stadium : public pez::core::IProcessor
         evolver.createNewGeneration();
         // Depending on the configuration, dump the best genome to a file
         saveBest();
+        // Check if we need to restart exploration
+        if (needRestartExploration()) {
+            restartExploration();
+        }
     }
 
     /// Initializes the iteration
@@ -83,10 +91,37 @@ struct Stadium : public pez::core::IProcessor
         });
     }
 
-    void saveBest() const
+    void saveBest(bool force = false) const
     {
-        if ((state.iteration % conf::util::best_save_period) == 0) {
-            pez::core::get<Genome>(0).genome.writeToFile("best_" + toString(state.iteration) + ".bin");
+        if ((state.iteration % conf::exp::best_save_period) == 0 || force) {
+            pez::core::get<Genome>(0).genome.writeToFile(getCurrentFolder() + "/best_" + toString(state.iteration) + ".bin");
         }
+    }
+
+    [[nodiscard]]
+    bool needRestartExploration() const
+    {
+        return state.iteration >= conf::exp::exploration_period;
+    }
+
+    void restartExploration()
+    {
+        // Reset state
+        state.newExploration();
+        saveBest(true);
+        // Change the seed of the RNG
+        RNGf::setSeed(state.iteration_exploration + conf::exp::seed_offset);
+        // Create the folder to save genomes
+        std::filesystem::create_directories(getCurrentFolder());
+        // Reset genomes
+        pez::core::foreach<Genome>([](Genome& g) {
+            g.resetGenome();
+        });
+    }
+
+    [[nodiscard]]
+    std::string getCurrentFolder() const
+    {
+        return "genomes_" + toString(state.iteration_exploration);
     }
 };

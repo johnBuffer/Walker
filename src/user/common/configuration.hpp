@@ -3,8 +3,12 @@
 
 namespace conf
 {
-constexpr uint32_t window_width  = 1600;
-constexpr uint32_t window_height = 900;
+namespace win
+{
+    constexpr uint32_t window_width = 1600;
+    constexpr uint32_t window_height = 900;
+}
+
 
 constexpr uint32_t input_count  = 9;
 constexpr uint32_t output_count = 6;
@@ -19,6 +23,7 @@ constexpr float    max_iteration_time = 100.0f;
 constexpr float    elite_ratio        = 0.2f;
 constexpr float    target_reward      = 100.0f;
 
+
 namespace mut
 {
     constexpr float new_node_proba = 0.05f;
@@ -32,9 +37,11 @@ namespace mut
     constexpr float offset_bias_proba   = 0.8f;
 }
 
-namespace util
+namespace exp
 {
-    constexpr uint32_t best_save_period = 10;
+    constexpr uint32_t seed_offset        = 2;
+    constexpr uint32_t best_save_period   = 50;
+    constexpr uint32_t exploration_period = 1000;
 }
 
 }

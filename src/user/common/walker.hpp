@@ -3,14 +3,13 @@
 
 struct Muscle
 {
-    uint64_t link_idx = 0;
-
-    float    rest_size = 0.0f;
+    uint64_t link_idx          = 0;
+    float    rest_size         = 0.0f;
     float    contraction_ratio = 0.0f;
     float    extension_ratio   = 0.0f;
-    float    current_ratio = 0.0f;
-    float    target_ratio = 0.0f;
-    float    speed = 10.0f;
+    float    current_ratio     = 0.0f;
+    float    target_ratio      = 0.0f;
+    float    speed             = 10.0f;
 
     Muscle() = default;
     Muscle(uint64_t idx, float size, float contraction, float extension)
@@ -61,10 +60,10 @@ struct Muscle
 
 struct Pod
 {
-    uint64_t object_idx = 0;
-    float speed = 30.0f;
-    float current_friction = 0.0f;
-    float target_friction = 0.0f;
+    uint64_t object_idx       = 0;
+    float    speed            = 30.0f;
+    float    current_friction = 0.0f;
+    float    target_friction  = 0.0f;
 
     explicit
     Pod(uint64_t idx)
@@ -99,15 +98,15 @@ struct Walker
     Walker(Vec2 position)
     {
         float const base = 50.0f;
+        // Pods
         addPod({position.x - base, position.y - base}); // 0
         addPod({position.x + base, position.y - base}); // 1
         addPod({position.x + base, position.y + base}); // 2
         addPod({position.x - base, position.y + base}); // 3
         addJoint(position);
-
         // Muscles
-        addMuscle(0, 3, 2.0f * base, 0.25f, 0.25f);
-        addMuscle(1, 2, 2.0f * base, 0.25f, 0.25f);
+        addMuscle(0, 3, 2.0f * base, 0.35f, 0.35f);
+        addMuscle(1, 2, 2.0f * base, 0.35f, 0.35f);
         // Bones
         addBone(0, 1);
         addBone(3, 2);
@@ -174,7 +173,7 @@ struct Walker
 
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
-        const float muscle_strength = 0.5f;
+        const float muscle_strength = 0.125f;
         muscles.emplace_back(system.links.size(), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;

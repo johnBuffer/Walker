@@ -12,7 +12,7 @@ struct Training
     {
         sf::ContextSettings settings;
         settings.antialiasingLevel = 8;
-        pez::render::WindowContextHandler app("Walk - Training", sf::Vector2u(conf::window_width, conf::window_height), settings, sf::Style::Default);
+        pez::render::WindowContextHandler app("Walk - Training", sf::Vector2u(conf::win::window_width, conf::win::window_height), settings, sf::Style::Default);
         training::registerSystems();
 
         pez::render::setFocus(conf::world_size * 0.5f);
