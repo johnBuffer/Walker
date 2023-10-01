@@ -3,7 +3,7 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/common/render/utils.hpp"
-#include "user/common/creature_drawable.hpp"
+#include "user/common/walker_drawable.hpp"
 #include "user/common/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
@@ -17,7 +17,7 @@ struct Renderer : public pez::core::IRenderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    CreatureDrawable creature_drawables;
+    WalkerDrawable creature_drawables;
 
     NetworkRenderer network_renderer;
 
@@ -34,7 +34,7 @@ struct Renderer : public pez::core::IRenderer
     float const network_padding = 20.0f;
     float const network_outline = 10.0f;
 
-    CreatureDrawable walker;
+    WalkerDrawable walker;
 
     TrainingState& state;
 

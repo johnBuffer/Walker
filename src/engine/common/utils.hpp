@@ -12,7 +12,7 @@ U to(const T& v)
 
 
 template<typename T>
-using CIVector = civ::IndexVector<T>;
+using CIVector = siv::IndexVector<T>;
 
 
 template<typename T>

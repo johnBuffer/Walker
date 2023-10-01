@@ -7,11 +7,9 @@
 #include "./walker.hpp"
 
 
-struct CreatureDrawable
+struct WalkerDrawable
 {
     static constexpr uint32_t bezier_pts = 32;
-    /// Minimum amount of time to wait before adding a footprint
-    static constexpr float footprint_cooldown = 0.4f;
 
     sf::VertexArray link_va;
     sf::VertexArray side_1_va;
@@ -37,7 +35,7 @@ struct CreatureDrawable
     Target render_target;
 
     explicit
-    CreatureDrawable(sf::Color color)
+    WalkerDrawable(sf::Color color)
         : link_va(sf::PrimitiveType::Quads)
         , side_1_va(sf::PrimitiveType::TriangleFan, bezier_pts)
         , side_2_va(sf::PrimitiveType::TriangleFan, bezier_pts)

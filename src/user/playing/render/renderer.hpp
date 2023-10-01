@@ -4,7 +4,7 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/common/render/utils.hpp"
-#include "user/common/creature_drawable.hpp"
+#include "user/common/walker_drawable.hpp"
 #include "./target.hpp"
 #include "user/common/network_renderer.hpp"
 #include "./creature_card.hpp"
@@ -19,7 +19,7 @@ struct Renderer
     Simulation& simulation;
     tp::ThreadPool& thread_pool;
 
-    std::vector<CreatureDrawable> creature_drawables;
+    std::vector<WalkerDrawable> creature_drawables;
 
     NetworkRenderer network_renderer;
 

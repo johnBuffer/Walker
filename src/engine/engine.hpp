@@ -30,7 +30,7 @@ uint32_t getClassID()
 }
 
 template<typename T>
-static civ::IndexVector<T>& getData()
+static siv::IndexVector<T>& getData()
 {
     return core::EntityContainer<T>::data;
 }
@@ -42,13 +42,13 @@ static ID create(Arg&&... args)
 }
 
 template<typename T>
-static T& get(civ::ID id)
+static T& get(siv::ID id)
 {
     return core::EntityContainer<T>::data[id];
 }
 
 template<typename T>
-civ::Ref<T> getRef(civ::ID id)
+siv::Ref<T> getRef(siv::ID id)
 {
     return core::EntityContainer<T>::data.createRef(id);
 }
@@ -72,9 +72,9 @@ T& getSingleton()
 }
 
 template<typename T, typename... Arg>
-civ::Ref<T> createGetRef(Arg&&... args)
+siv::Ref<T> createGetRef(Arg&&... args)
 {
-    const civ::ID id = core::EntityContainer<T>::create(std::forward<Arg>(args)...);
+    const siv::ID id = core::EntityContainer<T>::create(std::forward<Arg>(args)...);
     return core::EntityContainer<T>::data.createRef(id);
 }
 

@@ -2,19 +2,19 @@
 #include <vector>
 
 
-namespace civ
+namespace siv
 {
 
     using ID = uint64_t;
 
-/// Forward declaration
+    /// Forward declaration
     template<typename TObjectType>
     class IndexVector;
 
-/** Standalone object to access an object
- *
- * @tparam TObjectType The object's type
- */
+    /** Standalone object to access an object
+     *
+     * @tparam TObjectType The object's type
+     */
     template<typename TObjectType>
     class Ref
     {

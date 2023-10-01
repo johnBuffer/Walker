@@ -12,7 +12,7 @@ struct EntityContainer
 {
     static constexpr uint32_t        invalid_id = std::numeric_limits<uint32_t>::max();
     static uint32_t                  class_id;
-    static civ::IndexVector<TEntity> data;
+    static siv::IndexVector<TEntity> data;
 
     EntityContainer() = default;
 
@@ -69,10 +69,10 @@ template<typename T>
 uint32_t EntityContainer<T>::class_id = invalid_id;
 
 template<typename T>
-civ::IndexVector<T> EntityContainer<T>::data = {};
+siv::IndexVector<T> EntityContainer<T>::data = {};
 
 template<typename T>
-T& getEntity(civ::ID id)
+T& getEntity(siv::ID id)
 {
     return EntityContainer<T>::data[id];
 }
