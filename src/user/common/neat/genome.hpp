@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+#include "engine/common/binary_io.hpp"
+
 #include "dag.hpp"
 #include "network.hpp"
 
@@ -72,7 +74,7 @@ public: // Methods
     bool tryCreateConnection(uint32_t from, uint32_t to, float weight)
     {
         if (graph.createConnection(from, to)) {
-            createConnection(from, to, weight);
+            connections.push_back({from, to, weight});
             return true;
         }
         return false;
@@ -172,6 +174,39 @@ public: // Methods
         return network;
     }
 
+    void writeToFile(std::string const& filename) const
+    {
+        BinaryWriter writer(filename);
+        writer.write(info);
+        for (auto const& n : nodes) {
+            writer.write(n);
+        }
+        writer.write(connections.size());
+        for (auto const& c : connections) {
+            writer.write(c);
+        }
+    }
 
+    void loadFromFile(std::string const& filename)
+    {
+        // Create the reader
+        BinaryReader reader(filename);
+
+        // Load info
+        reader.readInto(info);
+        nodes.resize(info.getNodeCount());
+
+        // Load nodes
+        for (auto& n : nodes) {
+            reader.readInto(n);
+        }
+
+        // Load connections
+        auto const connection_count = reader.read<size_t>();
+        for (size_t i{0}; i < connection_count; ++i) {
+            auto const c = reader.read<Connection>();
+            createConnection(c.from, c.to, c.weight);
+        }
+    }
 };
 }
