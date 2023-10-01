@@ -199,6 +199,7 @@ public: // Methods
         // Load nodes
         for (auto& n : nodes) {
             reader.readInto(n);
+            graph.createNode();
         }
 
         // Load connections
