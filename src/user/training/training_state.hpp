@@ -7,6 +7,7 @@ struct TrainingState
 {
     uint32_t iteration             = 0;
     uint32_t iteration_exploration = 0;
+    float    iteration_best_score  = 0.0f;
 
     bool demo = false;
 
@@ -25,7 +26,8 @@ struct TrainingState
 
     void newExploration()
     {
-        iteration = 0;
+        iteration            = 0;
+        iteration_best_score = 0.0f;
         ++iteration_exploration;
     }
 };

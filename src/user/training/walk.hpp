@@ -62,6 +62,7 @@ struct Walk : public training::Task
         auto& genome = getGenome();
         // Update the network
         network = genome.generateNetwork();
+
         genome.score = 0.0f;
     }
 

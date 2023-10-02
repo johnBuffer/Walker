@@ -27,6 +27,7 @@ struct Stadium : public pez::core::IProcessor
         // Create genomes
         for (uint32_t i{0}; i < conf::population_size; ++i) {
             auto const id = pez::core::create<Genome>();
+            //pez::core::get<Genome>(id).genome.loadFromFile("genomes_8_3301/best_1000.bin");
         }
 
         // Create tasks
@@ -101,16 +102,20 @@ struct Stadium : public pez::core::IProcessor
     [[nodiscard]]
     bool needRestartExploration() const
     {
-        return state.iteration >= conf::exp::exploration_period;
+        return state.iteration > conf::exp::exploration_period;
     }
 
     void restartExploration()
     {
+        if (state.iteration_exploration) {
+            std::filesystem::rename(getCurrentFolder(), getCurrentFolder() + "_" + toString(state.iteration_best_score, 0));
+        }
         // Reset state
         state.newExploration();
         saveBest(true);
         // Change the seed of the RNG
-        RNGf::setSeed(state.iteration_exploration + conf::exp::seed_offset);
+        //RNGf::setSeed(state.iteration_exploration + conf::exp::seed_offset);
+        RNGf::setSeed(10);
         // Create the folder to save genomes
         std::filesystem::create_directories(getCurrentFolder());
         // Reset genomes

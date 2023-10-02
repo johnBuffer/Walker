@@ -75,6 +75,10 @@ struct Mutator
         uint32_t const count_2 = genome.info.hidden + genome.info.outputs;
         // Skip inputs
         uint32_t       idx_2   = getRandIndex(count_2) + genome.info.inputs;
+
+        assert(!genome.isOutput(idx_1));
+        assert(!genome.isInput(idx_2));
+
         // Create the new connection
         if (!genome.tryCreateConnection(idx_1, idx_2, RNGf::getFullRange(conf::mut::weight_range))) {
             //std::cout << "Cannot create connection " << idx_1 << " -> " << idx_2 << std::endl;

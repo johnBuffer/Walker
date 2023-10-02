@@ -88,7 +88,7 @@ public: // Methods
 
     void splitConnection(uint32_t i)
     {
-        if (i > connections.size()) {
+        if (i >= connections.size()) {
             std::cout << "Invalid connection " << i << std::endl;
         }
 
@@ -172,6 +172,18 @@ public: // Methods
         network.setOrder(getOrder());
 
         return network;
+    }
+
+    [[nodiscard]]
+    bool isInput(uint32_t i) const
+    {
+        return i < info.inputs;
+    }
+
+    [[nodiscard]]
+    bool isOutput(uint32_t i) const
+    {
+        return (i >= info.inputs) && (i < info.inputs + info.outputs);
     }
 
     void writeToFile(std::string const& filename) const

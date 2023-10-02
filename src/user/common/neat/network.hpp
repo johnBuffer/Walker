@@ -195,6 +195,14 @@ public: // Methods
         }
     }
 
+    template<typename TCallback>
+    void foreachConnection(TCallback&& callback) const
+    {
+        for (uint32_t i{0}; i < connection_count; ++i) {
+            callback(getConnection(i), i);
+        }
+    }
+
     /// Returns the depth of the network
     [[nodiscard]]
     uint32_t getDepth() const

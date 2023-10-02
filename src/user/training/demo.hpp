@@ -33,6 +33,30 @@ struct Demo : public pez::core::IProcessor
 
         if (need_init) {
             initialize();
+
+            auto const& genome = task.getGenome().genome;
+            std::cout << "Inputs: " << genome.info.inputs << " Outputs: " << genome.info.outputs << " Hidden: " << genome.info.hidden << std::endl;
+
+            for (auto const& c : genome.connections) {
+                std::cout << c.from << " -> " << c.to << std::endl;
+            }
+
+            std::cout << std::endl;
+
+            {
+                uint32_t i{0};
+                for (auto const& n: genome.graph.nodes) {
+                    std::cout << i << " depth: " << n.depth << " inc: " << n.incoming << std::endl;
+                    ++i;
+                }
+            }
+
+            std::cout << std::endl;
+
+            for (auto const& i : task.network.order) {
+                std::cout << i << " -> ";
+            }
+            std::cout << std::endl;
         }
 
         time += dt;
@@ -40,9 +64,10 @@ struct Demo : public pez::core::IProcessor
 
         // Switch back to training when demo is over
         if (time >= conf::max_iteration_time) {
-            state.demo = false;
+            state.endDemo();
             need_init  = true;
             std::cout << "Demo score: " << task.getGenome().score << std::endl;
+            state.iteration_best_score = task.getGenome().score;
         }
     }
 };

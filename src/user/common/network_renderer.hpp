@@ -11,6 +11,16 @@ struct NetworkRenderer
 {
     Vec2  const node_spacing = {10.0f, 16.0f};
     float const node_radius  = 12.0f;
+    sf::Font font;
+    sf::Text text;
+
+    NetworkRenderer()
+    {
+        font.loadFromFile("res/font.ttf");
+        text.setFont(font);
+        text.setCharacterSize(12);
+        text.setFillColor(sf::Color::White);
+    }
 
     struct DrawableNode
     {
@@ -57,7 +67,6 @@ struct NetworkRenderer
         connections.clear();
 
         // Create nodes
-        std::cout << getMaxDepth() << std::endl;
         std::vector<uint32_t> layers(getMaxDepth() + 1, 0);
         size.x = static_cast<float>(getMaxDepth() + 1) * (node_radius * 2.0f + node_spacing.x) - node_spacing.x + node_radius * 0.5f + 2.0f;
         for (uint32_t i{0}; i < nw.info.getNodeCount(); ++i) {
@@ -122,6 +131,8 @@ struct NetworkRenderer
         shape.setOutlineColor(sf::Color::White);
         shape.setFillColor(sf::Color::Black);
         shape.setOutlineThickness(2.0f);
+
+        uint32_t node_idx = 0;
         for (auto const& n : nodes) {
             shape.setPosition(n.position);
             context.drawDirect(shape, transform);
@@ -134,6 +145,11 @@ struct NetworkRenderer
             shape_in.setPosition(n.position);
 
             context.drawDirect(shape_in, transform);
+            text.setString(toString(node_idx));
+            text.setPosition(n.position);
+            context.drawDirect(text, transform);
+
+            ++node_idx;
         }
     }
 

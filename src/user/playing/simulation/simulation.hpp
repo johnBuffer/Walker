@@ -30,7 +30,7 @@ struct Simulation : public pez::core::IProcessor
         createTargets();
         createBackground();
 
-        createCreature("res/4_pods_12.bin", {30, 148, 96}, "Solution 1");
+        createCreature("genomes_8_3301/best_1000.bin", {30, 148, 96}, "Solution 1");
 
         target_remaining.resize(targets.size());
         for (auto& t : target_remaining) {
