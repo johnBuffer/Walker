@@ -13,7 +13,7 @@ struct Demo : public pez::core::IProcessor
 
     Walk task;
 
-    float time = 0.0f;
+    float time     = 0.0f;
     bool need_init = true;
 
     Demo()
