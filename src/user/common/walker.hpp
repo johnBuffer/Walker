@@ -173,7 +173,7 @@ struct Walker
 
     void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
     {
-        const float muscle_strength = 0.125f;
+        const float muscle_strength = 0.1f;
         muscles.emplace_back(system.links.size(), size, contraction, extension);
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;

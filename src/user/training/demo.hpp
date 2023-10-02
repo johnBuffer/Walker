@@ -33,30 +33,6 @@ struct Demo : public pez::core::IProcessor
 
         if (need_init) {
             initialize();
-
-            auto const& genome = task.getGenome().genome;
-            std::cout << "Inputs: " << genome.info.inputs << " Outputs: " << genome.info.outputs << " Hidden: " << genome.info.hidden << std::endl;
-
-            for (auto const& c : genome.connections) {
-                std::cout << c.from << " -> " << c.to << std::endl;
-            }
-
-            std::cout << std::endl;
-
-            {
-                uint32_t i{0};
-                for (auto const& n: genome.graph.nodes) {
-                    std::cout << i << " depth: " << n.depth << " inc: " << n.incoming << std::endl;
-                    ++i;
-                }
-            }
-
-            std::cout << std::endl;
-
-            for (auto const& i : task.network.order) {
-                std::cout << i << " -> ";
-            }
-            std::cout << std::endl;
         }
 
         time += dt;

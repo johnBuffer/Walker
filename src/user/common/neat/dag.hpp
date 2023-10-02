@@ -153,6 +153,7 @@ struct DAG
             if (connections[i] == to) {
                 std::swap(connections[i], connections.back());
                 connections.pop_back();
+                --nodes[to].incoming;
                 ++found;
             } else {
                 ++i;
