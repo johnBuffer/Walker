@@ -114,8 +114,8 @@ struct Stadium : public pez::core::IProcessor
         state.newExploration();
         saveBest(true);
         // Change the seed of the RNG
-        //RNGf::setSeed(state.iteration_exploration + conf::exp::seed_offset);
-        RNGf::setSeed(10);
+        RNGf::setSeed(state.iteration_exploration + conf::exp::seed_offset);
+        //RNGf::setSeed(10);
         // Create the folder to save genomes
         std::filesystem::create_directories(getCurrentFolder());
         // Reset genomes
