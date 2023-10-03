@@ -28,6 +28,7 @@ struct Playing
         focus.setInterpolationFunction(Interpolation::Linear);
         focus.setSpeed(1.5f);
         focus.setValueInstant(conf::world_size * 0.5f);
+        renderer.setNetwork(0);
 
         zoom.setValueInstant(conf::win::window_height / conf::maximum_distance * 0.95f);
 
@@ -37,17 +38,16 @@ struct Playing
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::Z, [&](sfev::CstEv){ focus_creature = 1; zoom = creature_zoom; renderer.setNetwork(1);});
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::E, [&](sfev::CstEv){ focus_creature = 2; zoom = creature_zoom; renderer.setNetwork(2);});
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::R, [&](sfev::CstEv){ focus_creature = 3; zoom = creature_zoom; renderer.setNetwork(3);});
-
         app.getEventManager().addKeyPressedCallback(sf::Keyboard::C, [&](sfev::CstEv){
             focus_creature = -1;
             focus = conf::world_size * 0.5f;
             zoom  = conf::win::window_height / conf::maximum_distance * 0.95f;
             pez::render::setFocus(conf::world_size * 0.5f);
-            pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.95f);
+            pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.9f);
         });
 
         pez::render::setFocus(conf::world_size * 0.5f);
-        pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.95f);
+        pez::render::setZoom(conf::win::window_height / conf::maximum_distance * 0.9f);
 
         constexpr uint32_t fps_cap = 60;
 
@@ -57,7 +57,8 @@ struct Playing
             pez::core::update(dt);
 
             if (focus_creature != -1) {
-                focus = simulation.creatures[focus_creature].getHeadPosition();
+                focus = simulation.walkers[focus_creature].getHeadPosition();
+                pez::render::setFocus(focus);
             }
 
             pez::render::Context& render_context = app.getRenderContext();

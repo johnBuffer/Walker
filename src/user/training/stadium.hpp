@@ -27,7 +27,7 @@ struct Stadium : public pez::core::IProcessor
         // Create genomes
         for (uint32_t i{0}; i < conf::population_size; ++i) {
             auto const id = pez::core::create<Genome>();
-            //pez::core::get<Genome>(id).genome.loadFromFile("genomes_8_3301/best_1000.bin");
+            pez::core::get<Genome>(id).genome.loadFromFile("genomes_2_3201/best_1000.bin");
         }
 
         // Create tasks
@@ -37,6 +37,19 @@ struct Stadium : public pez::core::IProcessor
         }
 
         restartExploration();
+
+        loadExistingGenome("genomes_2_3201/best_1000.bin");
+    }
+
+    void loadExistingGenome(std::string const& filename)
+    {
+        // Load the genome once
+        nt::Genome genome{conf::input_count, conf::output_count};
+        genome.loadFromFile(filename);
+        // and copy it to all other
+        pez::core::foreach<Genome>([&genome](Genome& g) {
+            g.genome = genome;
+        });
     }
 
     void update(float dt) override

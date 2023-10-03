@@ -82,7 +82,7 @@ struct PhysicSolver : public pez::core::IProcessor
     void solveCollisions()
     {
         // Multi-thread grid
-        const uint32_t thread_count = thread_pool.m_thread_count;
+        const uint32_t thread_count = 16;
         const uint32_t slice_count  = thread_count * 2;
         const uint32_t slice_size   = (grid.width / slice_count) * grid.height;
         // Find collisions in two passes to avoid data races

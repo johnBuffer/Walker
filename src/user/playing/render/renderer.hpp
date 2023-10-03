@@ -4,10 +4,10 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/common/render/utils.hpp"
-#include "user/common/walker_drawable.hpp"
+#include "user/common/render/walker_drawable.hpp"
 #include "./target.hpp"
-#include "user/common/network_renderer.hpp"
-#include "./creature_card.hpp"
+#include "user/common/render/network_renderer.hpp"
+#include "./walker_card.hpp"
 
 
 namespace playing
@@ -16,10 +16,10 @@ struct Renderer
 {
     static constexpr uint32_t circle_pts = 32;
 
-    Simulation& simulation;
+    Simulation&     simulation;
     tp::ThreadPool& thread_pool;
 
-    std::vector<WalkerDrawable> creature_drawables;
+    std::vector<WalkerDrawable> walker_drawables;
 
     NetworkRenderer network_renderer;
 
@@ -32,9 +32,9 @@ struct Renderer
     sf::VertexArray shadow_va;
 
     std::vector<WalkerCard> cards;
-    Card background;
-    Card network_back;
-    Card network_out;
+    Card                    background;
+    Card                    network_back;
+    Card                    network_out;
 
     float const card_margin     = 20.0f;
     float const network_padding = 20.0f;
@@ -59,29 +59,18 @@ struct Renderer
         text.setFillColor(sf::Color::Black);
 
         for (auto const& t : simulation.tasks) {
-            creature_drawables.emplace_back(t.color);
-            creature_drawables.back().initialize(simulation.creatures[t.creature_idx]);
-            creature_drawables.back().render_target.color = t.color;
-        }
-
-        for (auto const& t : simulation.tasks) {
-            Vec2 const padding{network_padding, network_padding};
-            Vec2 const out = padding + Vec2{network_outline, network_outline};
-            network_renderer.initialize(t.network);
-            network_renderer.position = Vec2{1600.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
-            network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
-            network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, t.color};
-            network_back.position = network_renderer.position - padding;
-            network_out.position = network_renderer.position - out;
+            walker_drawables.emplace_back(t.color);
+            walker_drawables.back().initialize(simulation.walkers[t.walker_idx]);
+            walker_drawables.back().render_target.color = t.color;
         }
 
         common::Utils::generateCircle(shadow_va, 80.0f, circle_pts, {0, 0, 0, 0});
         shadow_va[0].color = {0, 0, 0, 200};
 
         uint32_t i{0};
-        cards.reserve(simulation.creatures.size());
+        cards.reserve(simulation.walkers.size());
         for (auto const& t : simulation.tasks) {
-            cards.emplace_back(t.color, simulation.creatures[t.creature_idx]);
+            cards.emplace_back(t.color, simulation.walkers[t.walker_idx]);
             cards.back().rank = i;
             cards.back().setPosition({card_margin, card_margin + i * (WalkerCard::height + card_margin)});
             cards.back().text.setString(t.name);
@@ -121,7 +110,7 @@ struct Renderer
 
             for (auto const* t : sorted_tasks) {
                 auto const target = simulation.targets[t->target_idx];
-                creature_drawables[t->creature_idx].renderTarget(target, context);
+                walker_drawables[t->walker_idx].renderTarget(target, context);
                 text.setString(toString(t->target_idx + 0));
                 auto const size = text.getGlobalBounds().getSize();
 
@@ -144,20 +133,20 @@ struct Renderer
             uint32_t i{0};
             for (auto const& t : simulation.tasks) {
                 sf::Transform transform;
-                transform.translate(simulation.creatures[t.creature_idx].getJoint(4).position);
+                transform.translate(simulation.walkers[t.walker_idx].getJoint(4).position);
                 context.draw(shadow_va, transform);
-                creature_drawables[i].update(simulation.creatures[t.creature_idx], dt);
-                creature_drawables[i].render(simulation.creatures[t.creature_idx], simulation.targets[t.target_idx], context);
+                walker_drawables[i].update(simulation.walkers[t.walker_idx], dt);
+                walker_drawables[i].render(simulation.walkers[t.walker_idx], simulation.targets[t.target_idx], context);
                 ++i;
             }
         }
 
-        network_out.renderHud(context);
-        network_back.renderHud(context);
-        if (simulation.time > simulation.freeze_time) {
+        if (network_renderer.network) {
+            network_out.renderHud(context);
+            network_back.renderHud(context);
             network_renderer.update();
+            network_renderer.render(context);
         }
-        network_renderer.render(context);
 
         //context.drawDirect(hud_va);
 
@@ -167,8 +156,7 @@ struct Renderer
 
         {
             uint32_t i{0};
-            for (auto const &t: simulation.tasks) {
-                //cards[i].update(simulation, t.target_idx, simulation.creatures[t.creature_idx]);
+            for (auto const& t: simulation.tasks) {
                 cards[i].render(context);
                 ++i;
             }
@@ -224,7 +212,7 @@ struct Renderer
         Vec2 const padding{network_padding, network_padding};
         Vec2 const out = padding + Vec2{network_outline, network_outline};
         network_renderer.initialize(t.network);
-        network_renderer.position = Vec2{2560.0f - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
+        network_renderer.position = Vec2{conf::win::window_width - network_renderer.size.x - out.x - card_margin, card_margin + out.y};
         network_back = Card{network_renderer.size + 2.0f * padding, 20.0f, {50, 50, 50}};
         network_out  = Card{network_renderer.size + 2.0f * out, 20.0f + network_outline, t.color};
         network_back.position = network_renderer.position - padding;

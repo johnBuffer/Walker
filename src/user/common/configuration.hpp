@@ -39,7 +39,7 @@ namespace mut
 
 namespace exp
 {
-    constexpr uint32_t seed_offset        = 2;
+    constexpr uint32_t seed_offset        = 20;
     constexpr uint32_t best_save_period   = 50;
     constexpr uint32_t exploration_period = 1000;
 }

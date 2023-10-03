@@ -11,16 +11,8 @@ struct NetworkRenderer
 {
     Vec2  const node_spacing = {10.0f, 16.0f};
     float const node_radius  = 12.0f;
-    sf::Font font;
-    sf::Text text;
 
-    NetworkRenderer()
-    {
-        font.loadFromFile("res/font.ttf");
-        text.setFont(font);
-        text.setCharacterSize(12);
-        text.setFillColor(sf::Color::White);
-    }
+    NetworkRenderer() = default;
 
     struct DrawableNode
     {
@@ -120,6 +112,10 @@ struct NetworkRenderer
 
     void render(pez::render::Context& context)
     {
+        if (!network) {
+            return;
+        }
+
         sf::Transform transform;
         transform.translate(position);
 
@@ -145,9 +141,6 @@ struct NetworkRenderer
             shape_in.setPosition(n.position);
 
             context.drawDirect(shape_in, transform);
-            text.setString(toString(node_idx));
-            text.setPosition(n.position);
-            context.drawDirect(text, transform);
 
             ++node_idx;
         }
@@ -155,6 +148,10 @@ struct NetworkRenderer
 
     void update()
     {
+        if (!network) {
+            return;
+        }
+
         for (uint32_t i{0}; i < network->connection_count; ++i) {
             auto& c = connections[i];
 

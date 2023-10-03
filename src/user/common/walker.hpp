@@ -105,8 +105,8 @@ struct Walker
         addPod({position.x - base, position.y + base}); // 3
         addJoint(position);
         // Muscles
-        addMuscle(0, 3, 2.0f * base, 0.35f, 0.35f);
-        addMuscle(1, 2, 2.0f * base, 0.35f, 0.35f);
+        addMuscle(0, 3, 2.0f * base, 0.4f, 0.35f);
+        addMuscle(1, 2, 2.0f * base, 0.4f, 0.35f);
         // Bones
         addBone(0, 1);
         addBone(3, 2);

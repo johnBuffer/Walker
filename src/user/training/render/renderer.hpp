@@ -3,8 +3,8 @@
 #include "engine/common/smooth/smooth_value.hpp"
 
 #include "user/common/render/utils.hpp"
-#include "user/common/walker_drawable.hpp"
-#include "user/common/network_renderer.hpp"
+#include "user/common/render/walker_drawable.hpp"
+#include "user/common/render/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
 #include "user/training/demo.hpp"

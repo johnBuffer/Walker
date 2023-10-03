@@ -16,7 +16,7 @@ struct Simulation : public pez::core::IProcessor
 {
     PhysicSolver& solver;
 
-    std::vector<Walker>   creatures;
+    std::vector<Walker>   walkers;
     std::vector<WalkTask> tasks;
     std::vector<Vec2>     targets;
     std::vector<uint64_t> target_remaining;
@@ -30,7 +30,7 @@ struct Simulation : public pez::core::IProcessor
         createTargets();
         createBackground();
 
-        createCreature("genomes_8_3301/best_1000.bin", {30, 148, 96}, "Solution 1");
+        createWalker("res/genomes/example_1.bin", {30, 148, 96}, "Solution 1");
 
         target_remaining.resize(targets.size());
         for (auto& t : target_remaining) {
@@ -40,11 +40,11 @@ struct Simulation : public pez::core::IProcessor
 
     void update(float dt) override;
 
-    void createCreature(std::string const& genome_filename, sf::Color color, std::string const& name)
+    void createWalker(std::string const& genome_filename, sf::Color color, std::string const& name)
     {
-        creatures.emplace_back(conf::world_size * 0.5f);
+        walkers.emplace_back(conf::world_size * 0.5f);
         tasks.emplace_back(color);
-        tasks.back().creature_idx = creatures.size() - 1;
+        tasks.back().walker_idx = walkers.size() - 1;
         tasks.back().loadGenome(genome_filename);
         tasks.back().name = name;
     }
@@ -79,14 +79,14 @@ struct Simulation : public pez::core::IProcessor
     void computeGroundCollision()
     {
         float const physic_scale = conf::maximum_distance / static_cast<float>(solver.grid.width);
-        for (auto& creature : creatures) {
+        for (auto& creature : walkers) {
             for (auto& obj: solver.objects) {
                 for (uint32_t i{0}; i < 4; ++i) {
                     auto const& pod     = creature.getPod(i);
                     Vec2 const  pod_pos = pod.position / physic_scale;
                     Vec2 v = obj.position - pod_pos;
                     float const dist = MathVec2::length(v);
-                    float const pod_radius = 5.0f * (pod.friction);
+                    float const pod_radius = 8.0f * (pod.friction);
                     if (dist < pod_radius) {
                         obj.position += (pod_radius - dist) * MathVec2::normalize(v) * 0.25f;
                     }

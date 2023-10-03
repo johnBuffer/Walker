@@ -11,14 +11,14 @@
 
 struct WalkTask
 {
-    uint64_t creature_idx = {0};
-    uint64_t target_idx   = {0};
+    uint64_t walker_idx = {0};
+    uint64_t target_idx = {0};
     nt::Genome  genome;
     nt::Network network;
 
     sf::Color color;
 
-    uint64_t rank = 0;
+    uint64_t    rank = 0;
     std::string name;
 
     explicit
@@ -26,16 +26,16 @@ struct WalkTask
         : color{color_}
     {}
 
-    bool update(float dt, Walker& creature, Vec2 target)
+    bool update(float dt, Walker& walker, Vec2 target)
     {
         // Update AI
-        updateAI(creature, target);
+        updateAI(walker, target);
 
         // Update physic
-        creature.update(dt);
+        walker.update(dt);
 
         // Check target
-        const Vec2  to_target       = target - creature.getHeadPosition();
+        const Vec2  to_target       = target - walker.getHeadPosition();
         float const dist_to_target  = MathVec2::length(to_target);
         if (dist_to_target < conf::target_radius) {
             ++target_idx;
@@ -44,32 +44,32 @@ struct WalkTask
         return false;
     }
 
-    void updateAI(Walker& creature, Vec2 target)
+    void updateAI(Walker& walker, Vec2 target)
     {
-        const Vec2  to_target       = target - creature.getHeadPosition();
+        const Vec2  to_target       = target - walker.getHeadPosition();
         float const dist_to_target              = MathVec2::length(to_target);
-        const float to_target_dot   = MathVec2::dot(to_target / dist_to_target, creature.getHeadDirection());
-        const float to_target_dot_n = MathVec2::dot(to_target / dist_to_target, MathVec2::normal(creature.getHeadDirection()));
+        const float to_target_dot   = MathVec2::dot(to_target / dist_to_target, walker.getHeadDirection());
+        const float to_target_dot_n = MathVec2::dot(to_target / dist_to_target, MathVec2::normal(walker.getHeadDirection()));
         bool const success = network.execute({
             dist_to_target / conf::maximum_distance, // Distance to target
-            to_target_dot,                       // Direction evaluation
-            to_target_dot_n,                     // Direction normal evaluation
-            creature.getPodFriction(0),          // Pods state
-            creature.getPodFriction(1),
-            creature.getPodFriction(2),
-            creature.getPodFriction(3),
-            creature.getMuscleRatio(0),           // Muscles state
-            creature.getMuscleRatio(1),
+            to_target_dot,                           // Direction evaluation
+            to_target_dot_n,                         // Direction normal evaluation
+            walker.getPodFriction(0),                // Pods state
+            walker.getPodFriction(1),
+            walker.getPodFriction(2),
+            walker.getPodFriction(3),
+            walker.getMuscleRatio(0),                // Muscles state
+            walker.getMuscleRatio(1),
         });
 
         if (success) {
             auto const& output = network.getResult();
             for (uint32_t i{0}; i<4; ++i) {
-                creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
+                walker.setPodFriction(i, 0.5f * (1.0f + output[i]));
             }
 
             for (uint32_t i{0}; i<2; ++i) {
-                creature.setMuscleRatio(i, output[4 + i]);
+                walker.setMuscleRatio(i, output[4 + i]);
             }
         }
 
@@ -77,7 +77,7 @@ struct WalkTask
 
     void loadGenome(std::string const& filename)
     {
-        //genome.loadFromFile(filename);
+        genome.loadFromFile(filename);
         network = genome.generateNetwork();
     }
 };
