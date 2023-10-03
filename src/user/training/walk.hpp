@@ -18,7 +18,7 @@ struct Walk : public training::Task
     struct State
     {
         float pod[4];
-        float muscle[2];
+        float muscle[8];
 
         void setPodState(uint32_t i, float s)
         {
@@ -85,12 +85,14 @@ struct Walk : public training::Task
         time += dt;
         return;*/
 
+        auto const info = walker.getInfo();
+
         // Update state delay
         State current_state;
-        for (uint32_t i{0}; i < 4; ++i) {
+        for (uint32_t i{0}; i < info.pod_count; ++i) {
             current_state.setPodState(i, walker.getPodFriction(i));
         }
-        for (uint32_t i{0}; i < 2; ++i) {
+        for (uint32_t i{0}; i < info.muscle_count; ++i) {
             current_state.setMuscleState(i, walker.getMuscleRatio(i));
         }
         state.addValueBase(current_state);
@@ -116,6 +118,7 @@ struct Walk : public training::Task
 
     void updateAI(Walker& creature, Vec2 target)
     {
+        auto const info = walker.getInfo();
         State const state_delay = state.get();
 
         const Vec2  to_target       = target - creature.getHeadPosition();
@@ -126,22 +129,28 @@ struct Walk : public training::Task
             dist_to_target / conf::maximum_distance, // Distance to target
             to_target_dot,                           // Direction evaluation
             to_target_dot_n,                         // Direction normal evaluation
-            state_delay.pod[0],              // Pods state
+            state_delay.pod[0],                      // Pods state
             state_delay.pod[1],
             state_delay.pod[2],
             state_delay.pod[3],
-            state_delay.muscle[0],               // Muscles state
+            state_delay.muscle[0],                   // Muscles state
             state_delay.muscle[1],
+            state_delay.muscle[2],
+            state_delay.muscle[3],
+            state_delay.muscle[4],
+            state_delay.muscle[5],
+            state_delay.muscle[6],
+            state_delay.muscle[7],
         });
 
         if (success) {
             auto const& output = network.getResult();
-            for (uint32_t i{0}; i<4; ++i) {
+            for (uint32_t i{0}; i < info.pod_count; ++i) {
                 creature.setPodFriction(i, 0.5f * (1.0f + output[i]));
             }
 
-            for (uint32_t i{0}; i<2; ++i) {
-                creature.setMuscleRatio(i, output[4 + i]);
+            for (uint32_t i{0}; i < info.muscle_count; ++i) {
+                creature.setMuscleRatio(i, output[info.pod_count + i]);
             }
         }
     }

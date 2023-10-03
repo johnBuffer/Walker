@@ -12,7 +12,7 @@ struct VerletSystem
 
     void update(float dt)
     {
-        constexpr uint32_t iteration_count{1};
+        constexpr uint32_t iteration_count{8};
         float const        sub_dt{dt/static_cast<float>(iteration_count)};
         for (uint32_t i{iteration_count}; i--;) {
             // Swap update order each frame to limit biases

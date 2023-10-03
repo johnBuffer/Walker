@@ -9,7 +9,7 @@ struct Muscle
     float    extension_ratio   = 0.0f;
     float    current_ratio     = 0.0f;
     float    target_ratio      = 0.0f;
-    float    speed             = 10.0f;
+    float    speed             = 8.0f;
 
     Muscle() = default;
     Muscle(uint64_t idx, float size, float contraction, float extension)
@@ -85,6 +85,12 @@ struct Pod
 
 struct Walker
 {
+    struct Info
+    {
+        size_t pod_count    = 0;
+        size_t muscle_count = 0;
+    };
+
     VerletSystem system;
 
     float time = 0.0f;
@@ -98,22 +104,36 @@ struct Walker
     Walker(Vec2 position)
     {
         float const base = 50.0f;
-        // Pods
-        addPod({position.x - base, position.y - base}); // 0
-        addPod({position.x + base, position.y - base}); // 1
-        addPod({position.x + base, position.y + base}); // 2
-        addPod({position.x - base, position.y + base}); // 3
-        addJoint(position);
-        // Muscles
-        addMuscle(0, 3, 2.0f * base, 0.4f, 0.35f);
-        addMuscle(1, 2, 2.0f * base, 0.4f, 0.35f);
+        float const core_ratio = 0.7f;
+        // Joints
+        addJoint({position.x - core_ratio * base, position.y - core_ratio * base}); // 0
+        addJoint({position.x + core_ratio * base, position.y - core_ratio * base}); // 1
+        addJoint({position.x + core_ratio * base, position.y + core_ratio * base}); // 2
+        addJoint({position.x - core_ratio * base, position.y + core_ratio * base}); // 3
         // Bones
         addBone(0, 1);
-        addBone(3, 2);
-        addBone(0, 4);
-        addBone(1, 4);
-        addBone(2, 4);
-        addBone(3, 4);
+        addBone(1, 2);
+        addBone(2, 3);
+        addBone(3, 0);
+        addBone(0, 2);
+        addBone(1, 3);
+
+        // Pods
+        addPod({position.x - 2.0f * base, position.y - base}); // 4
+        addPod({position.x + 2.0f * base, position.y - base}); // 5
+        addPod({position.x + 2.0f * base, position.y + base}); // 6
+        addPod({position.x - 2.0f * base, position.y + base}); // 7
+
+        // Muscles
+        float const ratio = 0.15f;
+        addMuscle(0, 4, ratio, ratio);
+        addMuscle(3, 4, ratio, ratio);
+        addMuscle(1, 5, ratio, ratio);
+        addMuscle(2, 5, ratio, ratio);
+        addMuscle(1, 6, ratio, ratio);
+        addMuscle(2, 6, ratio, ratio);
+        addMuscle(0, 7, ratio, ratio);
+        addMuscle(3, 7, ratio, ratio);
     }
 
     void update(float dt)
@@ -171,13 +191,15 @@ struct Walker
         system.links.emplace_back(joint_1, joint_2, system.objects).strength = strength;
     }
 
-    void addMuscle(uint32_t joint_1, uint32_t joint_2, float size, float contraction, float extension)
+    void addMuscle(uint32_t joint_1, uint32_t joint_2, float contraction, float extension)
     {
-        const float muscle_strength = 0.1f;
-        muscles.emplace_back(system.links.size(), size, contraction, extension);
+        const float muscle_strength = 0.5f;
+
         auto& muscle = system.links.emplace_back(joint_1, joint_2, system.objects);
         muscle.is_muscle = true;
         muscle.strength  = muscle_strength;
+
+        muscles.emplace_back(system.links.size() - 1, muscle.target_length, contraction, extension);
     }
 
     void addJoint(Vec2 position, float mass = 1.0f)
@@ -241,6 +263,12 @@ struct Walker
     VerletObject const& getJoint(uint32_t idx) const
     {
         return system.objects[idx];
+    }
+
+    [[nodiscard]]
+    Info getInfo() const
+    {
+        return {pods.size(), muscles.size()};
     }
 };
 

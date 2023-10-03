@@ -38,7 +38,7 @@ struct Stadium : public pez::core::IProcessor
 
         restartExploration();
 
-        loadExistingGenome("genomes_2_3201/best_1000.bin");
+        //loadExistingGenome("genomes_2_3201/best_1000.bin");
     }
 
     void loadExistingGenome(std::string const& filename)

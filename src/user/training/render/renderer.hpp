@@ -4,6 +4,7 @@
 
 #include "user/common/render/utils.hpp"
 #include "user/common/render/walker_drawable.hpp"
+#include "user/common/render/walker_drawable_debug.hpp"
 #include "user/common/render/network_renderer.hpp"
 #include "user/common/render/card.hpp"
 
@@ -16,8 +17,6 @@ namespace training
 struct Renderer : public pez::core::IRenderer
 {
     static constexpr uint32_t circle_pts = 32;
-
-    WalkerDrawable creature_drawables;
 
     NetworkRenderer network_renderer;
 
@@ -34,7 +33,7 @@ struct Renderer : public pez::core::IRenderer
     float const network_padding = 20.0f;
     float const network_outline = 10.0f;
 
-    WalkerDrawable walker;
+    WalkerDrawableDebug walker;
 
     TrainingState& state;
 
@@ -44,7 +43,6 @@ struct Renderer : public pez::core::IRenderer
         , background{conf::world_size + Vec2{50.0f, 50.0f}, 25.0f, {50, 50, 50}}
         , network_back({}, 0.0f, sf::Color{50, 50, 50})
         , network_out({}, 0.0f, sf::Color{50, 50, 50})
-        , creature_drawables(sf::Color::White)
         , walker{{121, 123, 255}}
         , state{pez::core::getSingleton<TrainingState>()}
     {
