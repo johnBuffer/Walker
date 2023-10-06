@@ -119,21 +119,40 @@ struct Walker
         addBone(1, 3);
 
         // Pods
-        addPod({position.x - 2.0f * base, position.y - base}); // 4
-        addPod({position.x + 2.0f * base, position.y - base}); // 5
-        addPod({position.x + 2.0f * base, position.y + base}); // 6
-        addPod({position.x - 2.0f * base, position.y + base}); // 7
+        float const leg_scale = 1.5f;
+        addPod({position.x - leg_scale * base, position.y - leg_scale * base}); // 4
+        addPod({position.x + leg_scale * base, position.y - leg_scale * base}); // 5
+        addPod({position.x + leg_scale * base, position.y + leg_scale * base}); // 6
+        addPod({position.x - leg_scale * base, position.y + leg_scale * base}); // 7
+
+        addJoint({position.x - leg_scale * base, position.y - 0.35f * base}); // 8
+        addJoint({position.x + leg_scale * base, position.y - 0.35f * base}); // 9
+        addJoint({position.x + leg_scale * base, position.y + 0.35f * base}); // 10
+        addJoint({position.x - leg_scale * base, position.y + 0.35f * base}); // 11
+
+        addBone(0, 8);
+        addBone(8, 4);
+
+        addBone(1, 9);
+        addBone(9, 5);
+
+        addBone(2, 10);
+        addBone(10, 6);
+
+        addBone(3, 11);
+        addBone(11, 7);
 
         // Muscles
-        float const ratio = 0.15f;
-        addMuscle(0, 4, ratio, ratio);
-        addMuscle(3, 4, ratio, ratio);
-        addMuscle(1, 5, ratio, ratio);
-        addMuscle(2, 5, ratio, ratio);
-        addMuscle(1, 6, ratio, ratio);
-        addMuscle(2, 6, ratio, ratio);
-        addMuscle(0, 7, ratio, ratio);
-        addMuscle(3, 7, ratio, ratio);
+        float const ratio_contraction = 0.2f;
+        float const ratio_extension   = 0.2f;
+        addMuscle(3, 8 , ratio_contraction, ratio_extension);
+        addMuscle(0, 4 , ratio_contraction, ratio_extension);
+        addMuscle(2, 9 , ratio_contraction, ratio_extension);
+        addMuscle(1, 5 , ratio_contraction, ratio_extension);
+        addMuscle(1, 10, ratio_contraction, ratio_extension);
+        addMuscle(2, 6 , ratio_contraction, ratio_extension);
+        addMuscle(0, 11, ratio_contraction, ratio_extension);
+        addMuscle(3, 7 , ratio_contraction, ratio_extension);
     }
 
     void update(float dt)
