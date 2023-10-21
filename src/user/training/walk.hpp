@@ -88,7 +88,7 @@ struct Walk : public training::Task
         auto const info = walker.getInfo();
 
         // Update state delay
-        State current_state;
+        State current_state{};
         for (uint32_t i{0}; i < info.pod_count; ++i) {
             current_state.setPodState(i, walker.getPodFriction(i));
         }
